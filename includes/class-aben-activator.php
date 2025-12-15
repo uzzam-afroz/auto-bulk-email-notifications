@@ -37,21 +37,21 @@ class Aben_Activator
         $default_settings['aben_key'] = aben_generate_encryption_key();
         add_option('aben_options', $default_settings);
 
-        $wp_config_path = ABSPATH . 'wp-config.php';
+        // $wp_config_path = ABSPATH . 'wp-config.php';
 
-        if (file_exists($wp_config_path)) {
-            $config_content = file_get_contents($wp_config_path);
+        // if (file_exists($wp_config_path)) {
+        //     $config_content = file_get_contents($wp_config_path);
 
-            // Check if ALTERNATE_WP_CRON is already defined
-            if (strpos($config_content, 'ALTERNATE_WP_CRON') === false) {
-                $new_constant = "\ndefine('ALTERNATE_WP_CRON', true);";
+        //     // Check if ALTERNATE_WP_CRON is already defined
+        //     if (strpos($config_content, 'ALTERNATE_WP_CRON') === false) {
+        //         $new_constant = "\ndefine('ALTERNATE_WP_CRON', true);";
 
-                // Insert before "That's all, stop editing! Happy publishing."
-                if (strpos($config_content, "/* That's all, stop editing!") !== false) {
-                    $config_content = str_replace("/* That's all, stop editing!", "$new_constant\n/* That's all, stop editing!", $config_content);
-                    file_put_contents($wp_config_path, $config_content);
-                }
-            }
-        }
+        //         // Insert before "That's all, stop editing! Happy publishing."
+        //         if (strpos($config_content, "/* That's all, stop editing!") !== false) {
+        //             $config_content = str_replace("/* That's all, stop editing!", "$new_constant\n/* That's all, stop editing!", $config_content);
+        //             file_put_contents($wp_config_path, $config_content);
+        //         }
+        //     }
+        // }
     }
 }

@@ -33,6 +33,17 @@ define('ABEN_FEATURED_IMAGE', ABEN_PLUGIN_URL . '/assets/images/featured-image.p
 define('ABEN_PLUGIN_LOGO', ABEN_PLUGIN_URL . '/assets/images/logo.png');
 
 /**
+ * Load Action Scheduler (bundled or via WooCommerce)
+ *
+ * Ensures Action Scheduler is available before scheduling jobs.
+ */
+if (! class_exists('ActionScheduler')) {
+    if (file_exists(ABEN_PLUGIN_PATH . 'lib/action-scheduler/action-scheduler.php')) {
+        require_once ABEN_PLUGIN_PATH . 'lib/action-scheduler/action-scheduler.php';
+    }
+}
+
+/**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-aben-activator.php
  */

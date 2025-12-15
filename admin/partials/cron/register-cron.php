@@ -2,18 +2,29 @@
 if (!defined('ABSPATH')) {
 
     exit;
-
 }
 
-add_action('aben_cron_event', 'aben_send_email');
+if (! function_exists('aben_as_available')) {
+    function aben_as_available()
+    {
+        return function_exists('as_schedule_recurring_action') && function_exists('as_unschedule_all_actions');
+    }
+}
+
+add_action('aben_send_email_action', 'aben_send_email');
 
 function aben_register_cron()
 {
+    if (! aben_as_available()) {
+        return;
+    }
+
     // error_log('aben_register_cron called');
 
-    $cron_settings = aben_get_cron_settings()['sending_frequency'];
-    $day_of_week = intval(aben_get_cron_settings()['day_of_week']);
-    $email_time = intval(aben_get_cron_settings()['email_time']); // UNIX timestamp for time
+    $cron_settings = aben_get_cron_settings();
+    $interval      = (int) $cron_settings['interval'];
+    $day_of_week = intval($cron_settings['day_of_week']);
+    $email_time = intval($cron_settings['email_time']); // UNIX timestamp for time
     $timezone = wp_timezone_string(); // Get site's timezone
 
     // Create DateTime object for the email time in the site's timezone
@@ -23,9 +34,8 @@ function aben_register_cron()
     // Get the current time in UNIX timestamp
     $current_time = time();
 
-    // Schedule for Daily
-    if ($cron_settings === 'daily') {
-        if (!wp_next_scheduled('aben_cron_event')) {
+    if ($cron_settings['sending_frequency'] === 'daily') {
+        if (! as_next_scheduled_action('aben_send_email_action', [], 'aben')) {
             // Set the email time in the user's timezone
             $today_timestamp = (new DateTime('now', new DateTimeZone($timezone)))
                 ->setTime($email_datetime->format('H'), $email_datetime->format('i'))
@@ -36,14 +46,17 @@ function aben_register_cron()
                 $today_timestamp += DAY_IN_SECONDS; // Move to the next day
             }
 
-            wp_schedule_event($today_timestamp, 'daily', 'aben_cron_event');
-            // error_log('Daily aben_cron_event scheduled at ' . date('Y-m-d H:i:s', $today_timestamp));
+            as_schedule_recurring_action(
+                $today_timestamp,
+                $interval,
+                'aben_send_email_action',
+                [],
+                'aben'
+            );
+            // error_log('Daily aben_send_email_action scheduled at ' . date('Y-m-d H:i:s', $today_timestamp));
         }
-    }
-
-    // Schedule for Weekly
-    else if ($cron_settings === 'weekly') {
-        if (!wp_next_scheduled('aben_cron_event')) {
+    } elseif ($cron_settings['sending_frequency'] === 'weekly') {
+        if (! as_next_scheduled_action('aben_send_email_action', [], 'aben')) {
             $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
             // Ensure valid day of the week
@@ -61,14 +74,23 @@ function aben_register_cron()
                 $timestamp_weekly += WEEK_IN_SECONDS; // Move to the next week
             }
 
-            wp_schedule_event($timestamp_weekly, 'weekly', 'aben_cron_event');
-            // error_log('Weekly aben_cron_event scheduled at ' . date('Y-m-d H:i:s', $timestamp_weekly));
+            as_schedule_recurring_action(
+                $timestamp_weekly,
+                $interval,
+                'aben_send_email_action',
+                [],
+                'aben'
+            );
+            // error_log('Weekly aben_send_email_action scheduled at ' . date('Y-m-d H:i:s', $timestamp_weekly));
         }
     }
 }
 
 function aben_deregister_cron()
 {
-    // error_log('aben_deregister_cron called');
-    wp_clear_scheduled_hook('aben_cron_event');
+    if (! aben_as_available()) {
+        return;
+    }
+
+    as_unschedule_all_actions('aben_send_email_action', [], 'aben');
 }

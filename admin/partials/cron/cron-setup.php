@@ -3,7 +3,6 @@
 if (!defined('ABSPATH')) {
 
     exit;
-
 }
 
 function aben_get_cron_settings()
@@ -23,21 +22,21 @@ function aben_get_cron_settings()
     switch ($email_frequency) {
 
         case 'once_in_a_day':
-            $sending_frequency = 'daily';
+            $sending_frequency = DAY_IN_SECONDS;
             break;
-        case 'once_in_a_week':
-            $sending_frequency = 'weekly';
-            break;
-        default:
-            $sending_frequency = 'weekly';
 
+        case 'once_in_a_week':
+            $sending_frequency = WEEK_IN_SECONDS;
+            break;
+
+        default:
+            $sending_frequency = WEEK_IN_SECONDS;
     }
 
     return [
-        'sending_frequency' => $sending_frequency,
+        'interval'   => (int) $sending_frequency,
         'day_of_week' => $day_of_week,
         'email_time' => $email_time,
-        'timezone' => $timezone,
+        'timezone'   => $timezone,
     ];
-
 }

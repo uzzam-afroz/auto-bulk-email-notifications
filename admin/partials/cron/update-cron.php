@@ -1,18 +1,28 @@
 <?php //Update Aben cron on Plugin settings update
 
 if (!defined('ABSPATH')) {
-
     exit;
+}
 
+if (! function_exists('aben_as_available')) {
+    function aben_as_available()
+    {
+        return function_exists('as_schedule_recurring_action')
+            && function_exists('as_unschedule_all_actions');
+    }
 }
 
 add_action('update_option_aben_options', 'aben_update_cron');
 
 function aben_update_cron()
 {
-    $cron_settings = aben_get_cron_settings()['sending_frequency'];
-    $day_of_week = intval(aben_get_cron_settings()['day_of_week']);
-    $email_time = intval(aben_get_cron_settings()['email_time']); // UNIX timestamp for time
+    if (! aben_as_available()) {
+        return;
+    }
+    $cron_settings = aben_get_cron_settings();
+    $interval      = (int) $cron_settings['interval'];
+    $day_of_week   = intval($cron_settings['day_of_week']);
+    $email_time    = intval($cron_settings['email_time']); // UNIX timestamp for time
     $timezone = wp_timezone_string(); // Get site's timezone
 
     // Create DateTime object for the email time in the site's timezone
@@ -22,13 +32,10 @@ function aben_update_cron()
     // Get the current time in UNIX timestamp
     $current_time = time();
 
-    // Clear existing cron event if scheduled
-    if (wp_next_scheduled('aben_cron_event')) {
-        wp_clear_scheduled_hook('aben_cron_event');
-    }
+    as_unschedule_all_actions('aben_send_email_action', [], 'aben');
 
     // Schedule for Daily
-    if ($cron_settings === 'daily') {
+    if ($interval === DAY_IN_SECONDS) {
         // Set the timestamp for today in user's timezone
         $today_timestamp = (new DateTime('now', new DateTimeZone($timezone)))
             ->setTime($email_datetime->format('H'), $email_datetime->format('i'))
@@ -39,11 +46,16 @@ function aben_update_cron()
             $today_timestamp += DAY_IN_SECONDS; // Move to the next day
         }
 
-        wp_schedule_event($today_timestamp, 'daily', 'aben_cron_event');
-        // error_log('Daily Aben Cron Updated: ' . $email_datetime->format('Y-m-d H:i:s'));
+        as_schedule_recurring_action(
+            $today_timestamp,
+            $interval,
+            'aben_send_email_action',
+            [],
+            'aben'
+        );
 
         // Schedule for Weekly
-    } else if ($cron_settings === 'weekly') {
+    } elseif ($interval === WEEK_IN_SECONDS) {
         $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
         // Ensure valid day of the week
@@ -61,7 +73,12 @@ function aben_update_cron()
             $timestamp_weekly += WEEK_IN_SECONDS; // Move to the next week
         }
 
-        wp_schedule_event($timestamp_weekly, 'weekly', 'aben_cron_event');
-        // error_log('Weekly Aben Cron Updated: ' . $next_occurrence->format('Y-m-d H:i:s'));
+        as_schedule_recurring_action(
+            $timestamp_weekly,
+            $interval,
+            'aben_send_email_action',
+            [],
+            'aben'
+        );
     }
 }

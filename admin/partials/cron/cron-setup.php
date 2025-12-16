@@ -35,6 +35,7 @@ function aben_get_cron_settings()
 
     return [
         'interval'   => (int) $sending_frequency,
+        'sending_frequency' => $email_frequency,
         'day_of_week' => $day_of_week,
         'email_time' => $email_time,
         'timezone'   => $timezone,

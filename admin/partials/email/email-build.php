@@ -3,7 +3,6 @@
 if (!defined('ABSPATH')) {
 
     exit;
-
 }
 
 function aben_get_options() //Fetching Plugin Settings and Returning in Array
@@ -18,39 +17,47 @@ function aben_get_options() //Fetching Plugin Settings and Returning in Array
         }
     }
     return $setting;
-
 }
 
 // Function to get users email with user meta "aben_notification" set to true
 function aben_get_users_email()
 {
+    static $cached_emails = null;
 
-    $get_settings = aben_get_options();
-    $user_role = $get_settings['user_roles'];
-
-    // Prepare arguments array to fetch users
-    $args = array(
-        'role' => $user_role,
-        'meta_key' => 'aben_notification',
-        'meta_value' => true,
-    );
-
-    $users = get_users($args);
-
-    $email_addresses = array();
-
-    foreach ($users as $user) {
-
-        if (!in_array($user->user_email, $email_addresses)) {
-
-            $email_addresses[] = $user->user_email;
-        }
-
+    if (null !== $cached_emails) {
+        return $cached_emails;
     }
 
-    $email_addresses = array_unique($email_addresses); // Filtering out duplicates
+    $settings  = aben_get_options();
+    $user_role = $settings['user_roles'];
 
-    return $email_addresses;
+    $user_ids = get_users([
+        'role'       => $user_role,
+        'meta_query' => [
+            [
+                'key'     => 'aben_notification',
+                'value'   => '1',
+                'compare' => '=',
+            ],
+        ],
+        'fields'     => 'ID',
+    ]);
+
+    if (empty($user_ids)) {
+        return $cached_emails = [];
+    }
+
+    $emails = [];
+
+    foreach ($user_ids as $user_id) {
+        $user = get_user_by('ID', $user_id);
+
+        if ($user && is_email($user->user_email)) {
+            $emails[] = $user->user_email;
+        }
+    }
+
+    return $cached_emails = $emails;
 }
 
 function aben_get_today_posts()
@@ -114,16 +121,13 @@ function aben_get_today_posts()
                 'author' => $author,
                 'category' => $taxonomies,
             );
-
         }
         return array(
 
             'posts_to_email' => $posts_to_email,
             'posts_published' => $posts_published_today,
         );
-
     }
-
 }
 
 function aben_get_weekly_posts($selected_day_num)
@@ -139,8 +143,8 @@ function aben_get_weekly_posts($selected_day_num)
 
     // Calculate the difference to get back to the last occurrence of the selected day
     $days_since_selected = ($current_day_of_week >= $selected_day_num) ?
-    $current_day_of_week - $selected_day_num :
-    7 - ($selected_day_num - $current_day_of_week);
+        $current_day_of_week - $selected_day_num :
+        7 - ($selected_day_num - $current_day_of_week);
 
     // Find the date of the last occurrence of the selected day (start of the week)
     $start_of_week = strtotime("-$days_since_selected days");
@@ -203,7 +207,6 @@ function aben_get_weekly_posts($selected_day_num)
                 'category' => $taxonomies,
 
             );
-
         }
 
         return array(
@@ -232,15 +235,16 @@ function aben_get_post_tax($post_id, $custom_tax)
     return $taxonomies;
 }
 
-function aben_get_test_posts() {
-    $postsArr = get_posts( $args = [
+function aben_get_test_posts()
+{
+    $postsArr = get_posts($args = [
         'numberposts' => 10,
         'post_type' => aben_get_options()['post_type'],
-    ] );
+    ]);
 
     $posts = [];
 
-    foreach($postsArr as $post) {
+    foreach ($postsArr as $post) {
         $post_id = $post->ID;
         $post_title = $post->post_title;
         $post_link = get_permalink($post_id);
@@ -260,8 +264,6 @@ function aben_get_test_posts() {
             'author' => $post_author,
             'category' => $post_categories,
         ];
-
     }
-   return $posts;
-
+    return $posts;
 }

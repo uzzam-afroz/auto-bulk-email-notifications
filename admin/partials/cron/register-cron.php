@@ -35,7 +35,7 @@ function aben_register_cron()
     $current_time = time();
 
     if ($cron_settings['sending_frequency'] === 'daily') {
-        if (! as_next_scheduled_action('aben_send_email_action', [], 'aben')) {
+        if (! as_next_scheduled_action('aben_send_email_action', [], 'aben-auto')) {
             // Set the email time in the user's timezone
             $today_timestamp = (new DateTime('now', new DateTimeZone($timezone)))
                 ->setTime($email_datetime->format('H'), $email_datetime->format('i'))
@@ -51,12 +51,12 @@ function aben_register_cron()
                 $interval,
                 'aben_send_email_action',
                 [],
-                'aben'
+                'aben-auto'
             );
             // error_log('Daily aben_send_email_action scheduled at ' . date('Y-m-d H:i:s', $today_timestamp));
         }
     } elseif ($cron_settings['sending_frequency'] === 'weekly') {
-        if (! as_next_scheduled_action('aben_send_email_action', [], 'aben')) {
+        if (! as_next_scheduled_action('aben_send_email_action', [], 'aben-auto')) {
             $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
             // Ensure valid day of the week
@@ -79,7 +79,7 @@ function aben_register_cron()
                 $interval,
                 'aben_send_email_action',
                 [],
-                'aben'
+                'aben-auto'
             );
             // error_log('Weekly aben_send_email_action scheduled at ' . date('Y-m-d H:i:s', $timestamp_weekly));
         }
@@ -92,5 +92,5 @@ function aben_deregister_cron()
         return;
     }
 
-    as_unschedule_all_actions('aben_send_email_action', [], 'aben');
+    as_unschedule_all_actions('aben_send_email_action', [], 'aben-auto');
 }

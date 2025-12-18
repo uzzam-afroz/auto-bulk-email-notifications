@@ -32,7 +32,7 @@ function aben_update_cron()
     // Get the current time in UNIX timestamp
     $current_time = time();
 
-    as_unschedule_all_actions('aben_send_email_action', [], 'aben');
+    as_unschedule_all_actions('aben_send_email_action', [], 'aben-auto');
 
     // Schedule for Daily
     if ($interval === DAY_IN_SECONDS) {
@@ -51,7 +51,7 @@ function aben_update_cron()
             $interval,
             'aben_send_email_action',
             [],
-            'aben'
+            'aben-auto'
         );
 
         // Schedule for Weekly
@@ -78,7 +78,7 @@ function aben_update_cron()
             $interval,
             'aben_send_email_action',
             [],
-            'aben'
+            'aben-auto'
         );
     }
 }

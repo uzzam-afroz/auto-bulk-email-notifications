@@ -571,7 +571,7 @@ function aben_send_test_email()
 // Dashboard Page
 function aben_display_dashboard_page()
 {
-    if (! is_plugin_active('aben-pro/aben-pro.php')) { ?>
+    if (!class_exists('\ABEN_PRO\Pro_Loader')) { ?>
         <div class="wrap aben-pro-page">
             <div class="aben-analytics-overlay" style="background-image:url(<?php echo esc_url(ABEN_PLUGIN_URL . '/assets/images/aben-analytics.webp') ?>)"></div>
             <div class="aben-pro-card">
@@ -593,7 +593,7 @@ function aben_display_dashboard_page()
                 </div>
             </div>
         </div>
-    <?php } elseif (is_plugin_active('aben-pro/aben-pro.php') && 'inactive' === Aben_Admin::is_license_active()) { ?>
+    <?php } elseif (class_exists('\ABEN_PRO\Pro_Loader') && 'inactive' === Aben_Admin::is_license_active()) { ?>
         <div class="wrap aben-pro-page">
             <div class="aben-analytics-overlay" style="background-image:url(<?php echo esc_url(ABEN_PLUGIN_URL . '/assets/images/aben-analytics.webp') ?>)"></div>
             <div class="aben-pro-card">

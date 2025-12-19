@@ -9,16 +9,17 @@ if (! defined('ABSPATH')) {
 
 function aben_get_phpmailer_instance()
 {
-    global $phpmailer;
+    static $phpmailer = null;
 
-    // Ensure that PHPMailer is loaded
-    if (! ($phpmailer instanceof PHPMailer)) {
-        require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
-        require_once ABSPATH . WPINC . '/PHPMailer/SMTP.php';
-        require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
-
-        $phpmailer = new PHPMailer(true); // Pass `true` to enable exceptions
+    if ($phpmailer instanceof PHPMailer) {
+        return $phpmailer;
     }
+
+    require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
+    require_once ABSPATH . WPINC . '/PHPMailer/SMTP.php';
+    require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
+
+    $phpmailer = new PHPMailer(true);
 
     return $phpmailer;
 }
@@ -29,7 +30,7 @@ function aben_check_smtp_connection()
     $password      = $aben_smtp['smtp_password'];
     $smtp_password = aben_decrypt_password($password);
 
-    $mailer = aben_get_phpmailer_instance();
+    $mailer = aben_get_configured_smtp_mailer();
     $mailer->isSMTP();
     $mailer->Host       = $aben_smtp['smtp_host'];
     $mailer->SMTPAuth   = true;
@@ -74,103 +75,75 @@ function aben_get_smtp_settings()
     ];
 }
 
-// function aben_send_smtp_email($to, $subject, $message)
-// {
-//     $aben_smtp     = aben_get_smtp_settings();
-//     $password      = $aben_smtp['smtp_password'];
-//     $smtp_password = aben_decrypt_password($password);
-//     $email_logger  = new Aben_Email_Logs();
-
-//     $mail = aben_get_phpmailer_instance();
-
-//     try {
-
-//         // Use SMTP settings
-//         $mail->isSMTP();
-//         $mail->Host       = $aben_smtp['smtp_host'];
-//         $mail->SMTPAuth   = true;
-//         $mail->Username   = $aben_smtp['smtp_username'];
-//         $mail->Password   = $smtp_password;
-//         $mail->SMTPSecure = $aben_smtp['smtp_encryption'];
-//         $mail->Port       = $aben_smtp['smtp_port'];
-
-//         // Set the sender information
-//         $mail->setFrom($aben_smtp['smtp_username'], $aben_smtp['from_name']);
-
-//         $mail->clearAddresses();
-
-//         // Add recipient, subject, and body
-//         $mail->addAddress($to);
-//         $mail->isHTML(true);
-//         $mail->Subject = $subject;
-//         $mail->Body    = $message;
-//         if (! empty($aben_smtp['from_email'])) {
-//             $mail->addReplyTo($aben_smtp['from_email'], $aben_smtp['from_email']);
-//         }
-
-//         // Send the email
-//         if ($mail->send()) {
-//             $email_logger->log_email($to, $subject, $message, 'sent');
-//         }
-//         return true;
-//     } catch (Exception $e) {
-//         $email_logger->log_email($to, $subject, $message, 'failed');
-//         return false;
-//     }
-// }
-
 /**
- * Sends email via SMTP using PHPMailer
+ * Get configured SMTP mailer (singleton per request / batch)
  */
-function aben_send_smtp_email($to, $subject, $message)
+function aben_get_configured_smtp_mailer()
 {
+    static $mailer = null;
+
+    if ($mailer instanceof PHPMailer) {
+        return $mailer;
+    }
 
     $smtp     = aben_get_smtp_settings();
     $password = aben_decrypt_password($smtp['smtp_password']);
 
-    $logger = new Aben_Email_Logs();
-    $mail   = aben_get_phpmailer_instance();
+    $mailer = aben_get_phpmailer_instance();
+
+    $mailer->isSMTP();
+    $mailer->Host       = $smtp['smtp_host'];
+    $mailer->SMTPAuth   = true;
+    $mailer->Username   = $smtp['smtp_username'];
+    $mailer->Password   = $password;
+    $mailer->SMTPSecure = $smtp['smtp_encryption'];
+    $mailer->Port       = $smtp['smtp_port'];
+
+    $mailer->CharSet        = 'UTF-8';
+    $mailer->Timeout        = 15;
+    $mailer->SMTPKeepAlive  = true;
+
+    $mailer->setFrom($smtp['smtp_username'], $smtp['from_name']);
+
+    if (! empty($smtp['from_email'])) {
+        $mailer->addReplyTo($smtp['from_email'], $smtp['from_email']);
+    }
+
+    return $mailer;
+}
+
+/**
+ * Send email using reused SMTP connection (bulk-safe)
+ */
+function aben_send_smtp_email($to, $subject, $message, Aben_Email_Logs $logger = null)
+{
+    $mail   = aben_get_configured_smtp_mailer();
+    $logger = $logger ?: new Aben_Email_Logs();
 
     try {
-
-        $mail->isSMTP();
-        $mail->Host       = $smtp['smtp_host'];
-        $mail->SMTPAuth   = true;
-        $mail->Username   = $smtp['smtp_username'];
-        $mail->Password   = $password;
-        $mail->SMTPSecure = $smtp['smtp_encryption'];
-        $mail->Port       = $smtp['smtp_port'];
-
-        $mail->CharSet = 'UTF-8';
-        $mail->Timeout = 15;
-
-        $mail->setFrom($smtp['smtp_username'], $smtp['from_name']);
         $mail->addAddress($to);
-
-        if (! empty($smtp['from_email'])) {
-            $mail->addReplyTo($smtp['from_email'], $smtp['from_email']);
-        }
-
         $mail->isHTML(true);
         $mail->Subject = $subject;
         $mail->Body    = $message;
         $mail->AltBody = wp_strip_all_tags($message);
-
         $sent = $mail->send();
-
-        if ($sent) {
-            $logger->log_email($to, $subject, $message, 'sent');
-        }
-
-        $mail->clearAllRecipients();
-        $mail->clearAttachments();
-        $mail->clearCustomHeaders();
-        $mail->smtpClose();
-
+        $logger->log_email($to, $subject, $message, $sent ? 'sent' : 'failed');
+        $mail->clearAddresses();
         return $sent;
     } catch (Exception $e) {
         $logger->log_email($to, $subject, $message, 'failed');
         return false;
+    }
+}
+
+/**
+ * Close SMTP connection after batch processing
+ */
+function aben_close_smtp_mailer()
+{
+    $mailer = aben_get_configured_smtp_mailer();
+    if ($mailer instanceof PHPMailer) {
+        $mailer->smtpClose();
     }
 }
 
@@ -235,6 +208,7 @@ function aben_handle_test_email()
 
     // Send the test email
     if (aben_send_smtp_email($to, $subject, $message)) {
+        aben_close_smtp_mailer();
         wp_redirect(add_query_arg('test_email_sent', 'success', wp_get_referer()));
     } else {
         wp_redirect(add_query_arg('test_email_sent', 'failure', wp_get_referer()));

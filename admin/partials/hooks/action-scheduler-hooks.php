@@ -4,7 +4,7 @@
  * Action Scheduler Hook Registrations
  *
  * @package Aben
- * @since 2.1.0
+ * @since 2.2.0
  */
 
 if (!defined('ABSPATH')) {

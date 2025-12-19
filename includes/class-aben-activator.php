@@ -4,7 +4,7 @@
  * Fired during plugin activation
  *
  * @link       https://rehan.work
- * @since      2.1.0
+ * @since      2.2.0
  *
  * @package    Aben
  * @subpackage Aben/includes
@@ -15,7 +15,7 @@
  *
  * This class defines all code necessary to run during the plugin's activation.
  *
- * @since      2.1.0
+ * @since      2.2.0
  * @package    Aben
  * @subpackage Aben/includes
  * @author     Rehan Khan <hello@rehan.work>
@@ -28,7 +28,7 @@ class Aben_Activator
      *
      * Long Description.
      *
-     * @since    2.1.0
+     * @since    2.2.0
      */
     public static function activate()
     {

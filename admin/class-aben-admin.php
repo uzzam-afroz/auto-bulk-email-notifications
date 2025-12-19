@@ -4,7 +4,7 @@
  * The admin-specific functionality of the plugin.
  *
  * @link       https://rehan.work
- * @since      2.1.0
+ * @since      2.2.0
  *
  * @package    Aben
  * @subpackage Aben/admin
@@ -27,7 +27,7 @@ class Aben_Admin
     /**
      * The ID of this plugin.
      *
-     * @since    2.1.0
+     * @since    2.2.0
      * @access   private
      * @var      string    $plugin_name    The ID of this plugin.
      */
@@ -36,7 +36,7 @@ class Aben_Admin
     /**
      * The version of this plugin.
      *
-     * @since    2.1.0
+     * @since    2.2.0
      * @access   private
      * @var      string    $version    The current version of this plugin.
      */
@@ -45,7 +45,7 @@ class Aben_Admin
     /**
      * Initialize the class and set its properties.
      *
-     * @since    2.1.0
+     * @since    2.2.0
      * @param      string    $plugin_name       The name of this plugin.
      * @param      string    $version    The version of this plugin.
      */
@@ -59,7 +59,7 @@ class Aben_Admin
     /**
      * Register the stylesheets for the admin area.
      *
-     * @since    2.1.0
+     * @since    2.2.0
      */
     public function enqueue_styles()
     {
@@ -82,7 +82,7 @@ class Aben_Admin
     /**
      * Register the JavaScript for the admin area.
      *
-     * @since    2.1.0
+     * @since    2.2.0
      */
     public function enqueue_scripts()
     {

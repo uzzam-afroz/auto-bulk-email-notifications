@@ -4,7 +4,7 @@ Tags: Email, Notification
 Requires at least: 4.3.0
 Tested up to: 6.9
 Requires PHP: 7.2.24
-Stable tag: 2.1.0
+Stable tag: 2.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -63,12 +63,15 @@ The plugin doesn’t impose any limits, but your hosting provider may have restr
 
 == Changelog ==
 
+= 2.2 =
+* Migrated to Action Scheduler from WP-Cron.
+
 = 2.1 =
-* Improvements
+* Admin menu optimized.
 
 = 2.0 =
-* Events email are now available in Free version
-* Revamped Admin menu
+* Events email are now available in Free version.
+* Revamped Admin menu.
 
 = 1.1 =
 * Stable release.

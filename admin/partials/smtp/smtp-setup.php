@@ -115,7 +115,28 @@ function aben_get_configured_smtp_mailer()
 /**
  * Send email using reused SMTP connection (bulk-safe)
  */
-function aben_send_smtp_email($to, $subject, $message, Aben_Email_Logs $logger = null)
+// function aben_send_smtp_email($to, $subject, $message, Aben_Email_Logs $logger = null)
+// {
+//     $mail   = aben_get_configured_smtp_mailer();
+//     $logger = $logger ?: new Aben_Email_Logs();
+
+//     try {
+//         $mail->addAddress($to);
+//         $mail->isHTML(true);
+//         $mail->Subject = $subject;
+//         $mail->Body    = $message;
+//         $mail->AltBody = wp_strip_all_tags($message);
+//         $sent = $mail->send();
+//         $logger->log_email($to, $subject, $message, $sent ? 'sent' : 'failed');
+//         $mail->clearAddresses();
+//         return $sent;
+//     } catch (Exception $e) {
+//         $logger->log_email($to, $subject, $message, 'failed');
+//         return false;
+//     }
+// }
+
+function aben_send_smtp_email(string $to, string $subject, string $message, ?Aben_Email_Logs $logger = null): bool
 {
     $mail   = aben_get_configured_smtp_mailer();
     $logger = $logger ?: new Aben_Email_Logs();
@@ -126,12 +147,20 @@ function aben_send_smtp_email($to, $subject, $message, Aben_Email_Logs $logger =
         $mail->Subject = $subject;
         $mail->Body    = $message;
         $mail->AltBody = wp_strip_all_tags($message);
+
         $sent = $mail->send();
-        $logger->log_email($to, $subject, $message, $sent ? 'sent' : 'failed');
+
+        if ($sent) {
+            $logger->log_email($to, $subject, $message, 'sent');
+        } else {
+            // PHPMailer error (no exception thrown)
+            $logger->log_email($to, $subject, $message, 'failed', $mail->ErrorInfo);
+        }
+
         $mail->clearAddresses();
         return $sent;
     } catch (Exception $e) {
-        $logger->log_email($to, $subject, $message, 'failed');
+        $logger->log_email($to, $subject, $message, 'failed', $e->getMessage());
         return false;
     }
 }

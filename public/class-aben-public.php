@@ -4,7 +4,7 @@
  * The public-facing functionality of the plugin.
  *
  * @link       https://rehan.work
- * @since      2.1.0
+ * @since      2.2.0
  *
  * @package    Aben
  * @subpackage Aben/public
@@ -26,7 +26,7 @@ class Aben_Public
 	/**
 	 * The ID of this plugin.
 	 *
-	 * @since    2.1.0
+	 * @since    2.2.0
 	 * @access   private
 	 * @var      string    $plugin_name    The ID of this plugin.
 	 */
@@ -35,7 +35,7 @@ class Aben_Public
 	/**
 	 * The version of this plugin.
 	 *
-	 * @since    2.1.0
+	 * @since    2.2.0
 	 * @access   private
 	 * @var      string    $version    The current version of this plugin.
 	 */
@@ -44,7 +44,7 @@ class Aben_Public
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @since    2.1.0
+	 * @since    2.2.0
 	 * @param      string    $plugin_name       The name of the plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
@@ -58,7 +58,7 @@ class Aben_Public
 	/**
 	 * Register the stylesheets for the public-facing side of the site.
 	 *
-	 * @since    2.1.0
+	 * @since    2.2.0
 	 */
 	public function enqueue_styles()
 	{
@@ -81,7 +81,7 @@ class Aben_Public
 	/**
 	 * Register the JavaScript for the public-facing side of the site.
 	 *
-	 * @since    2.1.0
+	 * @since    2.2.0
 	 */
 	public function enqueue_scripts()
 	{

@@ -4,7 +4,7 @@
  * Register all actions and filters for the plugin
  *
  * @link       https://rehan.work
- * @since      2.1.0
+ * @since      2.2.0
  *
  * @package    Aben
  * @subpackage Aben/includes
@@ -27,7 +27,7 @@ class Aben_Loader
 	/**
 	 * The array of actions registered with WordPress.
 	 *
-	 * @since    2.1.0
+	 * @since    2.2.0
 	 * @access   protected
 	 * @var      array    $actions    The actions registered with WordPress to fire when the plugin loads.
 	 */
@@ -36,7 +36,7 @@ class Aben_Loader
 	/**
 	 * The array of filters registered with WordPress.
 	 *
-	 * @since    2.1.0
+	 * @since    2.2.0
 	 * @access   protected
 	 * @var      array    $filters    The filters registered with WordPress to fire when the plugin loads.
 	 */
@@ -45,7 +45,7 @@ class Aben_Loader
 	/**
 	 * Initialize the collections used to maintain the actions and filters.
 	 *
-	 * @since    2.1.0
+	 * @since    2.2.0
 	 */
 	public function __construct()
 	{
@@ -57,7 +57,7 @@ class Aben_Loader
 	/**
 	 * Add a new action to the collection to be registered with WordPress.
 	 *
-	 * @since    2.1.0
+	 * @since    2.2.0
 	 * @param    string               $hook             The name of the WordPress action that is being registered.
 	 * @param    object               $component        A reference to the instance of the object on which the action is defined.
 	 * @param    string               $callback         The name of the function definition on the $component.
@@ -72,7 +72,7 @@ class Aben_Loader
 	/**
 	 * Add a new filter to the collection to be registered with WordPress.
 	 *
-	 * @since    2.1.0
+	 * @since    2.2.0
 	 * @param    string               $hook             The name of the WordPress filter that is being registered.
 	 * @param    object               $component        A reference to the instance of the object on which the filter is defined.
 	 * @param    string               $callback         The name of the function definition on the $component.
@@ -88,7 +88,7 @@ class Aben_Loader
 	 * A utility function that is used to register the actions and hooks into a single
 	 * collection.
 	 *
-	 * @since    2.1.0
+	 * @since    2.2.0
 	 * @access   private
 	 * @param    array                $hooks            The collection of hooks that is being registered (that is, actions or filters).
 	 * @param    string               $hook             The name of the WordPress filter that is being registered.
@@ -115,7 +115,7 @@ class Aben_Loader
 	/**
 	 * Register the filters and actions with WordPress.
 	 *
-	 * @since    2.1.0
+	 * @since    2.2.0
 	 */
 	public function run()
 	{

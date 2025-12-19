@@ -20,17 +20,18 @@ class Aben_Email_Logs
      * @param string $message The message content of the email.
      * @param string $status The status of the email (e.g., "sent", "failed").
      */
-    public function log_email($to, $subject, $message, $status)
+    public function log_email($to, $subject, $message, $status, $error_message = null)
     {
         global $wpdb;
 
         // Sanitize input data
         $data = [
-            'email_to' => sanitize_email($to),
-            'subject'  => sanitize_text_field($subject),
-            'message'  => wp_kses_post($message),
-            'status'   => sanitize_text_field($status),
-            'sent_at'  => sanitize_text_field(current_time('mysql')), // Get the current time in MySQL format
+            'email_to'      => sanitize_email($to),
+            'subject'       => sanitize_text_field($subject),
+            'message'       => wp_kses_post($message),
+            'status'        => sanitize_text_field($status),
+            'error_message' => $error_message ? sanitize_textarea_field($error_message) : null,
+            'sent_at'       => current_time('mysql'),
         ];
 
         // Insert the log entry into the table
@@ -42,13 +43,12 @@ class Aben_Email_Logs
                 '%s', // subject
                 '%s', // message
                 '%s', // status
+                '%s', // error_message
                 '%s', // sent_at
             ]
         );
 
         wp_cache_delete('all_logs', $this->cache_group_name);
-        // Clear old logs after adding a new one
-        $this->clear_old_logs();
     }
 
     /**
@@ -59,7 +59,7 @@ class Aben_Email_Logs
         global $wpdb;
         $query = "DELETE FROM {$this->table_name} WHERE sent_at < DATE_SUB(NOW(), INTERVAL 30 DAY)";
         // Delete logs older than 30 days
-        $wpdb->query($wpdb->prepare($query));
+        $wpdb->query($query);
     }
 
     /**
@@ -146,5 +146,4 @@ class Aben_Email_Logs
         // Execute the query and return the total count
         return (int) $wpdb->get_var($query);
     }
-
 }

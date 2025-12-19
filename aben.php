@@ -4,7 +4,7 @@
  * Plugin Name:       Aben - Auto Bulk Email Notifications
  * Plugin URI:        https://abenplugin.com
  * Description:       The simplest way to engage your subscribers or customers by scheduling and sending emails for your latest blogs, products, news etc. Just automate and send bulk emails directly from your website.
- * Version:           2.1.0
+ * Version:           2.2.0
  * Author:            Rehan Khan
  * Author URI:        https://rehan.work/
  * License:           GPL-2.0+
@@ -18,7 +18,7 @@ if (! defined('WPINC')) {
     die;
 }
 
-define('ABEN_VERSION', '2.1.0');
+define('ABEN_VERSION', '2.2.0');
 define('ABEN_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('ABEN_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('ABEN_BRAND_TEXT', 'Powered by');
@@ -79,8 +79,21 @@ function aben_activate()
     require_once plugin_dir_path(__FILE__) . 'includes/class-aben-activator.php';
     Aben_Activator::activate();
     aben_create_email_logs_table();
+    aben_maybe_add_error_message_column();
     aben_add_user_meta_to_existing_users();
     aben_register_cron();
+    /**
+     * Daily log clear event
+     */
+    if (! as_next_scheduled_action('aben_cleanup_email_logs')) {
+        as_schedule_recurring_action(
+            time(),
+            DAY_IN_SECONDS,
+            'aben_cleanup_email_logs',
+            [],
+            'aben-maintenance'
+        );
+    }
 }
 
 /**
@@ -137,6 +150,48 @@ function aben_create_email_logs_table()
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
     dbDelta($sql);
 }
+/**
+ * Ensure the email logs table contains the `error_message` column.
+ *
+ * This function performs a safe, idempotent schema check and adds the
+ * `error_message` column only if it does not already exist.
+ *
+ * - Designed for production environments
+ * - Backward compatible with existing data
+ * - Safe to run on every request until the column exists
+ * - No table recreation or data loss
+ *
+ * IMPORTANT:
+ * This function must only perform additive schema changes.
+ * Do NOT use it for destructive operations (DROP, RENAME, MODIFY).
+ *
+ * @return void
+ */
+function aben_maybe_add_error_message_column()
+{
+    global $wpdb;
+
+    $table = $wpdb->prefix . 'aben_email_logs';
+
+    // Check if column already exists
+    $column_exists = $wpdb->get_var(
+        $wpdb->prepare(
+            "SHOW COLUMNS FROM {$table} LIKE %s",
+            'error_message'
+        )
+    );
+
+    if (! $column_exists) {
+        $wpdb->query(
+            "ALTER TABLE {$table} ADD COLUMN error_message TEXT NULL"
+        );
+    }
+}
+
+add_action('aben_cleanup_email_logs', function () {
+    $logger = new Aben_Email_Logs();
+    $logger->clear_old_logs();
+});
 
 /**
  * The core plugin class

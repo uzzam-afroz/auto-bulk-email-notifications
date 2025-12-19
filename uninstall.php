@@ -20,7 +20,7 @@
  * https://github.com/tommcfarlin/WordPress-Plugin-Boilerplate/pull/123#issuecomment-28541913
  *
  * @link       https://rehan.work
- * @since      2.1.0
+ * @since      2.2.0
  *
  * @package    Aben
  */

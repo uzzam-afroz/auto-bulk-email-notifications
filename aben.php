@@ -82,18 +82,6 @@ function aben_activate()
     aben_maybe_add_error_message_column();
     aben_add_user_meta_to_existing_users();
     aben_register_cron();
-    /**
-     * Daily log clear event
-     */
-    if (! as_next_scheduled_action('aben_cleanup_email_logs')) {
-        as_schedule_recurring_action(
-            time(),
-            DAY_IN_SECONDS,
-            'aben_cleanup_email_logs',
-            [],
-            'aben-maintenance'
-        );
-    }
 }
 
 /**

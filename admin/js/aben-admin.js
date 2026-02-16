@@ -32,11 +32,7 @@
       });
 
       mediaUploader.on("select", function () {
-        var attachment = mediaUploader
-          .state()
-          .get("selection")
-          .first()
-          .toJSON();
+        var attachment = mediaUploader.state().get("selection").first().toJSON();
         $input.val(attachment.url);
         $preview.attr("src", attachment.url).show();
         $removeButton.text("X");
@@ -100,14 +96,12 @@
 
     aben_options_show_view_post: {
       target: ".view-post",
-      action: (el, value) =>
-        $(".view-post").css("display", value ? "inline-block" : "none"),
+      action: (el, value) => $(".view-post").css("display", value ? "inline-block" : "none"),
       checkbox: true,
     },
     aben_options_show_unsubscribe: {
       target: "#unsubscribe",
-      action: (el, value) =>
-        $("#unsubscribe").css("display", value ? "inline-block" : "none"),
+      action: (el, value) => $("#unsubscribe").css("display", value ? "inline-block" : "none"),
       checkbox: true,
     },
     aben_options_view_all_posts_text: {
@@ -178,8 +172,7 @@
     },
     aben_event_options_template_show_button: {
       target: "#button-text-event",
-      action: (el, value) =>
-        $("#button-text-event").css("display", value ? "block" : "none"),
+      action: (el, value) => $("#button-text-event").css("display", value ? "block" : "none"),
       checkbox: true,
     },
   };
@@ -190,9 +183,7 @@
     const map = elementsMap[inputId];
     if (map) {
       const targetElement = $(map.target);
-      const value = map.checkbox
-        ? $(event.target).is(":checked")
-        : $(event.target).val();
+      const value = map.checkbox ? $(event.target).is(":checked") : $(event.target).val();
       map.action(targetElement, value);
     }
   }
@@ -244,13 +235,66 @@
   }
 })(jQuery);
 
-const removeBranding = document.querySelector(
-  "#aben-email-tab-grid table.form-table tbody > tr:last-child th:has(a#aben_remove_branding)"
-);
+const removeBranding = document.querySelector("#aben-email-tab-grid table.form-table tbody > tr:last-child th:has(a#aben_remove_branding)");
 if (removeBranding) {
   removeBranding.setAttribute("colspan", "2");
-  removeBranding.setAttribute(
-    "title",
-    "Remove Powered by Aben from Email Footer"
-  );
+  removeBranding.setAttribute("title", "Remove Powered by Aben from Email Footer");
 }
+
+// ============================================
+// Email Provider Field Visibility Toggle
+// ============================================
+(function ($) {
+  "use strict";
+
+  $(document).ready(function () {
+    // Function to toggle provider-specific fields
+    function toggleProviderFields() {
+      var provider = $("#aben_options_email_provider").val();
+
+      // Get all SMTP fields
+      var smtpFields = [
+        "#aben_options_smtp_host",
+        "#aben_options_smtp_port",
+        "#aben_options_smtp_encryption",
+        "#aben_options_smtp_username",
+        "#aben_options_smtp_password",
+      ];
+
+      // Get all ToSend fields
+      var tosendFields = ["#aben_options_tosend_api_key", "#aben_options_tosend_from_email"];
+
+      // Common fields (always visible)
+      var commonFields = ["#aben_options_from_name", "#aben_options_from_email"];
+
+      // Hide all provider-specific fields first
+      $.each(smtpFields.concat(tosendFields), function (index, fieldId) {
+        $(fieldId).closest("tr").hide();
+      });
+
+      // Always show common fields
+      $.each(commonFields, function (index, fieldId) {
+        $(fieldId).closest("tr").show();
+      });
+
+      // Show fields based on selected provider
+      if (provider === "smtp") {
+        $.each(smtpFields, function (index, fieldId) {
+          $(fieldId).closest("tr").show();
+        });
+      } else if (provider === "tosend") {
+        $.each(tosendFields, function (index, fieldId) {
+          $(fieldId).closest("tr").show();
+        });
+      }
+    }
+
+    // Run on page load
+    toggleProviderFields();
+
+    // Run on provider selection change
+    $("#aben_options_email_provider").on("change", function () {
+      toggleProviderFields();
+    });
+  });
+})(jQuery);

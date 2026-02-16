@@ -1,1 +1,0 @@
-# auto-bulk-email-notifications

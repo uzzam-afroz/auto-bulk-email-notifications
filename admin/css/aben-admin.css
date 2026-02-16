@@ -4,152 +4,172 @@
  */
 
 :root {
-  --brand-color: hsl(207, 68%, 61%);
-  --brand-color-dark: hsl(207, 68%, 32%);
-  --brand-color-light: hsl(207, 68%, 84%);
-  --brand-color-ultra-light: hsl(207, 68%, 96%);
-  --success-color: hsl(85, 40%, 52%);
-  --success-color-ultra-light: hsl(135, 100%, 96%);
-  --error-color: hsl(359, 81%, 44%);
-  --error-color-ultra-light: hsl(359, 100%, 90%);
+    --brand-color: hsl(207, 68%, 61%);
+    --brand-color-dark: hsl(207, 68%, 32%);
+    --brand-color-light: hsl(207, 68%, 84%);
+    --brand-color-ultra-light: hsl(207, 68%, 96%);
+    --success-color: hsl(85, 40%, 52%);
+    --success-color-ultra-light: hsl(135, 100%, 96%);
+    --error-color: hsl(359, 81%, 44%);
+    --error-color-ultra-light: hsl(359, 100%, 90%);
 }
 
 #aben-app {
-  font-family: ui-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  display: grid;
-  margin-top: 0;
-  gap: 1rem;
-  padding-inline-start: 1rem;
+    font-family:
+        ui-sans,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        "Open Sans",
+        "Helvetica Neue",
+        sans-serif;
+    display: grid;
+    margin-top: 0;
+    gap: 1rem;
+    padding-inline-start: 1rem;
 }
 
 .aben-app__subheading {
-  display: grid;
-  grid-auto-flow: column;
-  gap: 1rem;
-  font-weight: 700;
-  line-height: 1;
-  background-color: #f7fafc;
-  padding-block: 0.25rem;
-  padding-inline: 1rem;
-  border-bottom: solid 1px var(--brand-color-light);
+    display: grid;
+    grid-auto-flow: column;
+    gap: 1rem;
+    font-weight: 700;
+    line-height: 1;
+    background-color: #f7fafc;
+    padding-block: 0.25rem;
+    padding-inline: 1rem;
+    border-bottom: solid 1px var(--brand-color-light);
 }
 
 #aben-general-settings,
 #aben-smtp-settings,
 #aben-email-tab-grid,
 #aben-events {
-  background: #fff;
-  padding-inline: 1rem;
+    background: #fff;
+    padding-inline: 1rem;
+}
+
+/* Provider field transitions */
+#aben-smtp-settings table.form-table tr {
+    transition:
+        opacity 0.3s ease-in-out,
+        height 0.3s ease-in-out;
+}
+
+#aben-smtp-settings table.form-table tr[style*="display: none"] {
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
 }
 #aben-events {
-  margin-top: -1.8rem;
-  margin-right: 1rem;
+    margin-top: -1.8rem;
+    margin-right: 1rem;
 }
 #aben-header {
-  display: grid;
-  position: relative;
-  place-content: start;
-  grid-auto-flow: column;
-  background: #ffffff;
-  padding-inline: 1rem;
-  margin-inline-start: -16px;
-  gap: 1rem;
-  border-bottom: 1px solid transparent;
+    display: grid;
+    position: relative;
+    place-content: start;
+    grid-auto-flow: column;
+    background: #ffffff;
+    padding-inline: 1rem;
+    margin-inline-start: -16px;
+    gap: 1rem;
+    border-bottom: 1px solid transparent;
 }
 
 #aben-logo {
-  display: contents;
+    display: contents;
 }
 #aben-logo > img {
-  width: 100%;
-  max-width: 120px;
-  object-fit: contain;
-  padding-block: 10px;
+    width: 100%;
+    max-width: 120px;
+    object-fit: contain;
+    padding-block: 10px;
 }
 
 #aben-nav {
-  all: unset;
-  display: flex;
-  align-items: center;
-  min-height: 100%;
+    all: unset;
+    display: flex;
+    align-items: center;
+    min-height: 100%;
 }
 
 #aben-nav-menu {
-  display: grid;
-  grid-auto-flow: column;
-  gap: 0.25rem;
-  min-height: 100%;
-  place-items: center;
+    display: grid;
+    grid-auto-flow: column;
+    gap: 0.25rem;
+    min-height: 100%;
+    place-items: center;
 }
 
 #aben-nav a {
-  all: unset;
-  min-height: 100%;
-  place-content: center;
-  cursor: pointer;
-  font-style: 14px;
-  color: #909399;
-  padding-inline: 10px;
+    all: unset;
+    min-height: 100%;
+    place-content: center;
+    cursor: pointer;
+    font-style: 14px;
+    color: #909399;
+    padding-inline: 10px;
 
-  &:hover {
-    color: #303133;
-  }
+    &:hover {
+        color: #303133;
+    }
 }
 
 #aben-nav a.nav-tab-active {
-  color: #303133;
-  border-bottom: solid 2px var(--brand-color);
-  background: var(--brand-color-ultra-light);
+    color: #303133;
+    border-bottom: solid 2px var(--brand-color);
+    background: var(--brand-color-ultra-light);
 }
 
 #aben-body {
-  display: grid;
-  /* place-content: center; */
-  margin-inline-end: 1rem;
+    display: grid;
+    /* place-content: center; */
+    margin-inline-end: 1rem;
 
-  &
-    form
-    table
-    tbody
-    tr
-    td
-    > :not([id="aben_branding"], [type="checkbox"], [type="color"]) {
-    min-width: 100%;
-  }
-
-  & .form-table {
-    margin-top: 0;
-  }
-  & form input:not([type="submit"]),
-  select,
-  ~ #aben-unsubscribe-tab .unsubscribe-header form input {
-    accent-color: var(--brand-color);
-    border-color: var(--brand-color-light);
-    background-color: var(--brand-color-ultra-light);
-    &:focus {
-      border-color: var(--brand-color-dark);
-      box-shadow: 0 0 0 1px var(--brand-color);
-      outline: 2px solid transparent;
-      background-color: #fff;
-    }
-  }
-  & form input#submit,
-  #aben-test-form input[type="submit"],
-  #aben-license-settings [type="submit"],
-  ~ #aben-unsubscribe-tab .unsubscribe-header form input[type="submit"] {
-    background-color: var(--success-color);
-    border-color: var(--success-color);
-    color: #fff;
-
-    &:hover {
-      opacity: 0.9;
+    & form table tbody tr td > :not([id="aben_branding"], [type="checkbox"], [type="color"]) {
+        min-width: 100%;
     }
 
-    &:focus {
-      box-shadow: 0 0 0 1px #fff, 0 0 0 3px var(--success-color);
+    & .form-table {
+        margin-top: 0;
     }
-  }
+    & form input:not([type="submit"]),
+    select,
+    ~ #aben-unsubscribe-tab .unsubscribe-header form input {
+        accent-color: var(--brand-color);
+        border-color: var(--brand-color-light);
+        background-color: var(--brand-color-ultra-light);
+        &:focus {
+            border-color: var(--brand-color-dark);
+            box-shadow: 0 0 0 1px var(--brand-color);
+            outline: 2px solid transparent;
+            background-color: #fff;
+        }
+    }
+    & form input#submit,
+    #aben-test-form input[type="submit"],
+    #aben-license-settings [type="submit"],
+    ~ #aben-unsubscribe-tab .unsubscribe-header form input[type="submit"] {
+        background-color: var(--success-color);
+        border-color: var(--success-color);
+        color: #fff;
+
+        &:hover {
+            opacity: 0.9;
+        }
+
+        &:focus {
+            box-shadow:
+                0 0 0 1px #fff,
+                0 0 0 3px var(--success-color);
+        }
+    }
 }
 
 /* #aben-smtp-settings {
@@ -159,353 +179,357 @@
 } */
 
 #aben-email-tab-grid {
-  & .form-table th {
-    width: unset;
-  }
-  p.submit {
-    text-align: left;
-    max-width: 100%;
-    padding: 0;
-    position: fixed;
-    z-index: 99;
-    left: 196px;
-    bottom: 10px;
-  }
-  & table.form-table tbody > tr:last-child th:has(a#aben_remove_branding) {
-    + td {
-      display: none;
+    & .form-table th {
+        width: unset;
     }
-    & a {
-      all: unset;
-      padding-block: 10px;
-      padding-inline: 10px;
-      background: hsl(54, 99%, 50%);
-      color: #222;
-      cursor: pointer;
-      border-radius: 2px;
+    p.submit {
+        text-align: left;
+        max-width: 100%;
+        padding: 0;
+        position: fixed;
+        z-index: 99;
+        left: 196px;
+        bottom: 10px;
+    }
+    & table.form-table tbody > tr:last-child th:has(a#aben_remove_branding) {
+        + td {
+            display: none;
+        }
+        & a {
+            all: unset;
+            padding-block: 10px;
+            padding-inline: 10px;
+            background: hsl(54, 99%, 50%);
+            color: #222;
+            cursor: pointer;
+            border-radius: 2px;
 
-      &:hover {
-        background: hsl(54, 99%, 48%);
-      }
+            &:hover {
+                background: hsl(54, 99%, 48%);
+            }
+        }
     }
-  }
 }
 
 div#aben-email-tab-grid > :first-child {
-  max-height: 80vh;
+    max-height: 80vh;
 }
 
 #aben-notice,
 #aben-notice--success {
-  position: fixed;
-  min-width: 200px;
-  right: 1rem;
-  top: 8rem;
-  background: var(--success-color-ultra-light);
-  border-color: var(--success-color);
-  align-content: center;
-  z-index: 99999;
+    position: fixed;
+    min-width: 200px;
+    right: 1rem;
+    top: 8rem;
+    background: var(--success-color-ultra-light);
+    border-color: var(--success-color);
+    align-content: center;
+    z-index: 99999;
 }
 
 #aben-notice--error {
-  position: fixed;
-  min-width: 200px;
-  right: 1rem;
-  top: 8rem;
-  background: var(--error-color-ultra-light);
-  border-color: var(--error-color);
-  align-content: center;
-  z-index: 99999;
+    position: fixed;
+    min-width: 200px;
+    right: 1rem;
+    top: 8rem;
+    background: var(--error-color-ultra-light);
+    border-color: var(--error-color);
+    align-content: center;
+    z-index: 99999;
 }
 
 #aben-test-form {
-  position: absolute;
-  right: 1rem;
-  top: 6px;
-  #test_email_address {
-    max-width: 220px;
-  }
+    position: absolute;
+    right: 1rem;
+    top: 6px;
+    #test_email_address {
+        max-width: 220px;
+    }
 }
 
 #aben-unsubscribe-tab {
-  background-color: #fff;
-  margin-inline-end: 1rem;
+    background-color: #fff;
+    margin-inline-end: 1rem;
 }
 #aben-license-settings {
-  background: #fff;
-  display: grid;
-  position: relative;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 1rem;
-  line-height: 1;
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 14px;
-  & p:has(span) {
+    background: #fff;
+    display: grid;
+    position: relative;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 1rem;
     line-height: 1;
-    & > span {
-      background-color: green;
-      padding-inline: 8px;
-      padding-block: 3px;
-      color: #ffffff;
-      border-radius: 2px;
-    }
-  }
-  & input[type="text"] {
-    min-width: 38ch;
-  }
-  & input#aben-activate-license {
-    width: min(300px, 100vw);
-    margin-left: 100px;
-  }
-  & p.submit {
-    margin: 0;
-    padding: 0;
-    margin-top: 10px;
-  }
-  & .aben-pro {
-    padding-inline: 10px;
-    padding-block: 5px;
-    background: var(--success-color-ultra-light);
-    min-width: 200px;
-    border: solid 1px var(--success-color);
-    border-left-width: 3px;
-    & p.aben-pro-active-message {
-      margin: 0;
-      &::after {
-        content: "✓";
-        display: inline-flex;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 14px;
+    & p:has(span) {
         line-height: 1;
-        color: white;
-        padding: 2px;
-        margin-left: 5px;
-        place-content: center;
-        border-radius: 50vw;
-        /* aspect-ratio: 1; */
-        background: var(--success-color);
-      }
+        & > span {
+            background-color: green;
+            padding-inline: 8px;
+            padding-block: 3px;
+            color: #ffffff;
+            border-radius: 2px;
+        }
     }
-  }
-  & th {
-    display: none;
-  }
-  & td {
-    position: absolute;
-    margin: 0;
-    padding: 0;
-    top: 22px;
-    left: 250px;
-  }
+    & input[type="text"] {
+        min-width: 38ch;
+    }
+    & input#aben-activate-license {
+        width: min(300px, 100vw);
+        margin-left: 100px;
+    }
+    & p.submit {
+        margin: 0;
+        padding: 0;
+        margin-top: 10px;
+    }
+    & .aben-pro {
+        padding-inline: 10px;
+        padding-block: 5px;
+        background: var(--success-color-ultra-light);
+        min-width: 200px;
+        border: solid 1px var(--success-color);
+        border-left-width: 3px;
+        & p.aben-pro-active-message {
+            margin: 0;
+            &::after {
+                content: "✓";
+                display: inline-flex;
+                line-height: 1;
+                color: white;
+                padding: 2px;
+                margin-left: 5px;
+                place-content: center;
+                border-radius: 50vw;
+                /* aspect-ratio: 1; */
+                background: var(--success-color);
+            }
+        }
+    }
+    & th {
+        display: none;
+    }
+    & td {
+        position: absolute;
+        margin: 0;
+        padding: 0;
+        top: 22px;
+        left: 250px;
+    }
 }
 .unsubscribe-header {
-  /* margin: 20px 0; */
-  padding-inline: 1rem;
-  & + table {
-    border: none !important;
-  }
+    /* margin: 20px 0; */
+    padding-inline: 1rem;
+    & + table {
+        border: none !important;
+    }
 }
 
 .unsubscribe-header form {
-  position: absolute;
-  top: 115px;
-  right: 1.5rem;
+    position: absolute;
+    top: 115px;
+    right: 1.5rem;
 }
 
 .aben-email-logs {
-  border: none !important;
+    border: none !important;
 }
 .pagination-wrap {
-  margin-top: 15px;
-  text-align: center;
+    margin-top: 15px;
+    text-align: center;
 }
 .pagination-wrap .page-numbers {
-  display: inline-block;
-  margin: 0 5px;
+    display: inline-block;
+    margin: 0 5px;
 }
 
 /* Events Page */
 
 .aben-events-form-table {
-  & td {
-    padding: unset;
-  }
-  & textarea {
-    width: 100%;
-    min-height: 700px;
-    height: auto;
-  }
-  & #aben-events-template-preview {
-    padding-right: 1rem;
-  }
+    & td {
+        padding: unset;
+    }
+    & textarea {
+        width: 100%;
+        min-height: 700px;
+        height: auto;
+    }
+    & #aben-events-template-preview {
+        padding-right: 1rem;
+    }
 }
 
 table#color-fields-table {
-  & tbody {
-    display: grid;
-    grid-auto-flow: column;
-    grid-template-columns: repeat(6, 1fr);
-  }
+    & tbody {
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-columns: repeat(6, 1fr);
+    }
 }
 
 .aben-nav-menu--events {
-  & form {
-    margin: 0;
-    position: absolute;
-    right: 1rem;
-    & input[type="submit"] {
-      background: var(--success-color);
-      border-color: var(--success-color);
-      color: #fff;
-      &:hover {
-        opacity: 0.9;
-        background: var(--success-color);
-        border-color: var(--success-color);
-      }
-      &:focus {
-        box-shadow: 0 0 0 1px #fff, 0 0 0 3px var(--success-color);
-        background: var(--success-color);
-        border-color: var(--success-color);
-      }
+    & form {
+        margin: 0;
+        position: absolute;
+        right: 1rem;
+        & input[type="submit"] {
+            background: var(--success-color);
+            border-color: var(--success-color);
+            color: #fff;
+            &:hover {
+                opacity: 0.9;
+                background: var(--success-color);
+                border-color: var(--success-color);
+            }
+            &:focus {
+                box-shadow:
+                    0 0 0 1px #fff,
+                    0 0 0 3px var(--success-color);
+                background: var(--success-color);
+                border-color: var(--success-color);
+            }
+        }
     }
-  }
 }
 .aben-license-notice {
-  background: white;
-  padding: 1rem;
-  border: solid 1px var(--brand-color);
-  border-radius: 4px;
-  & img {
-    width: 100%;
-    max-width: 150px;
-  }
-  & a {
-    all: unset;
-    cursor: pointer;
-    color: var(--brand-color);
-    &:hover {
-      text-decoration: underline;
+    background: white;
+    padding: 1rem;
+    border: solid 1px var(--brand-color);
+    border-radius: 4px;
+    & img {
+        width: 100%;
+        max-width: 150px;
     }
-  }
+    & a {
+        all: unset;
+        cursor: pointer;
+        color: var(--brand-color);
+        &:hover {
+            text-decoration: underline;
+        }
+    }
 }
 
 #aben_events_test_form,
 #aben_smtp_connection_btn {
-  position: absolute;
-  right: 1rem;
+    position: absolute;
+    right: 1rem;
 }
 
 #aben_smtp_connection_btn input {
-  background-color: var(--success-color);
-  border-color: var(--success-color);
-  color: #fff;
-
-  &:hover {
-    opacity: 0.9;
-  }
-
-  &:focus {
-    box-shadow: 0 0 0 1px #fff, 0 0 0 3px var(--success-color);
-    background: var(--success-color);
+    background-color: var(--success-color);
     border-color: var(--success-color);
-  }
+    color: #fff;
+
+    &:hover {
+        opacity: 0.9;
+    }
+
+    &:focus {
+        box-shadow:
+            0 0 0 1px #fff,
+            0 0 0 3px var(--success-color);
+        background: var(--success-color);
+        border-color: var(--success-color);
+    }
 }
 
 #aben_events_email_btn {
-  position: fixed;
-  bottom: 1rem;
+    position: fixed;
+    bottom: 1rem;
 }
 
 #wpcontent:has(.aben-pro-page) {
-  padding: 0;
+    padding: 0;
 }
 .wrap.aben-pro-page {
-  margin: 0;
-  display: grid;
-  min-height: 100dvh;
-  place-content: center;
-  justify-items: center;
-  gap: 1rem;
-  position: relative;
-  isolation: isolate;
-  & .aben-analytics-overlay {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    z-index: -1;
-    &::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      backdrop-filter: blur(5px);
-      background: hsl(0 0 0 / 0.5);
-      opacity: 1;
-    }
-  }
-  & img {
-    width: 100%;
-    max-width: 150px;
-  }
-  & .aben-pro-card {
-    :is(h1, h2, h3, h4) {
-      margin: unset;
-    }
+    margin: 0;
     display: grid;
+    min-height: 100dvh;
+    place-content: center;
+    justify-items: center;
     gap: 1rem;
-    padding: 1rem;
-    background-color: #ffffff;
-    border: solid 1px var(--brand-color);
-    border-radius: 8px;
-    min-width: 250px;
+    position: relative;
+    isolation: isolate;
+    & .aben-analytics-overlay {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        z-index: -1;
+        &::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            backdrop-filter: blur(5px);
+            background: hsl(0 0 0 / 0.5);
+            opacity: 1;
+        }
+    }
+    & img {
+        width: 100%;
+        max-width: 150px;
+    }
+    & .aben-pro-card {
+        :is(h1, h2, h3, h4) {
+            margin: unset;
+        }
+        display: grid;
+        gap: 1rem;
+        padding: 1rem;
+        background-color: #ffffff;
+        border: solid 1px var(--brand-color);
+        border-radius: 8px;
+        min-width: 250px;
 
-    & .header {
-      display: grid;
-      /* & img {
+        & .header {
+            display: grid;
+            /* & img {
         margin-inline: auto;
       } */
-    }
-    & .body h1 {
-      margin: 0;
-      padding: 0;
-      font-weight: 500;
-      line-height: 1;
-    }
-    & li {
-      font-weight: 500;
-      margin-block: 1em;
-      &::before {
-        content: "✓";
-        display: inline-flex;
-        margin-inline-end: 0.5rem;
-        color: #ffffff;
-        background: var(--success-color);
-        aspect-ratio: 1;
-        width: 1rem;
-        border-radius: 50vw;
-        line-height: 1;
-        justify-content: center;
-        align-items: center;
-      }
-    }
-    & .footer {
-      & a {
-        font-weight: 500;
-        font-size: 1rem;
-        background-color: var(--brand-color);
-        border-color: var(--brand-color);
-        width: 100%;
-        text-align: center;
-        &:hover {
-          background-color: var(--success-color);
-          border-color: var(--success-color);
         }
-      }
+        & .body h1 {
+            margin: 0;
+            padding: 0;
+            font-weight: 500;
+            line-height: 1;
+        }
+        & li {
+            font-weight: 500;
+            margin-block: 1em;
+            &::before {
+                content: "✓";
+                display: inline-flex;
+                margin-inline-end: 0.5rem;
+                color: #ffffff;
+                background: var(--success-color);
+                aspect-ratio: 1;
+                width: 1rem;
+                border-radius: 50vw;
+                line-height: 1;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+        & .footer {
+            & a {
+                font-weight: 500;
+                font-size: 1rem;
+                background-color: var(--brand-color);
+                border-color: var(--brand-color);
+                width: 100%;
+                text-align: center;
+                &:hover {
+                    background-color: var(--success-color);
+                    border-color: var(--success-color);
+                }
+            }
+        }
     }
-  }
 }
 #wpcontent:has(#aben-app) {
-  padding: 0;
+    padding: 0;
 }
 #wpfooter {
-  position: unset;
+    position: unset;
 }

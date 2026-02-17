@@ -31,8 +31,8 @@ define("ABEN_PLUGIN_LOGO", ABEN_PLUGIN_URL . "/assets/images/logo.png");
  * Load Action Scheduler (bundled or via WooCommerce)
  */
 if (!class_exists("ActionScheduler")) {
-    if (file_exists(ABEN_PLUGIN_PATH . "lib/action-scheduler/action-scheduler.php")) {
-        require_once ABEN_PLUGIN_PATH . "lib/action-scheduler/action-scheduler.php";
+    if (file_exists(ABEN_PLUGIN_PATH . "libs/action-scheduler/action-scheduler.php")) {
+        require_once ABEN_PLUGIN_PATH . "libs/action-scheduler/action-scheduler.php";
     }
 }
 
@@ -60,6 +60,9 @@ require_once ABEN_PLUGIN_PATH . "admin/partials/smtp/smtp-setup.php";
 // Load cron functions
 require_once ABEN_PLUGIN_PATH . "admin/partials/cron/cron-setup.php";
 
+// Load Events class (needed for Action Scheduler callbacks)
+require_once ABEN_PLUGIN_PATH . "admin/partials/event/class-aben-events.php";
+
 /**
  * Register Action Scheduler callbacks
  * MUST run before 'init' hook (priority < 10)
@@ -73,6 +76,10 @@ function aben_register_action_scheduler_hooks()
 
     // Individual email worker
     add_action("aben_send_single_email_worker", "aben_send_single_email_worker");
+
+    // Initialize Events class to register its Action Scheduler hooks
+    // This ensures aben_process_event_email_batch callback is available
+    Aben_Events::get_instance();
 }
 
 // ===========================================================================

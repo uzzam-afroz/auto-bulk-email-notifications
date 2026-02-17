@@ -216,17 +216,14 @@ function aben_register_settings()
 
     add_settings_field("email_subject", "Email Subject", "aben_callback_field_text", "aben_section_general_setting", "aben_section_general_setting", [
         "id" => "email_subject",
-        "label" => "Sender name for all providers",
     ]);
 
     add_settings_field("user_roles", "Send To", "aben_callback_field_select", "aben_section_general_setting", "aben_section_general_setting", [
         "id" => "user_roles",
-        "label" => "Sender name for all providers",
     ]);
 
     add_settings_field("post_type", "Post Type", "aben_callback_field_select", "aben_section_general_setting", "aben_section_general_setting", [
         "id" => "post_type",
-        "label" => "Sender name for all providers",
     ]);
 
     add_settings_field(
@@ -235,17 +232,15 @@ function aben_register_settings()
         "aben_callback_field_select",
         "aben_section_general_setting",
         "aben_section_general_setting",
-        ["id" => "email_frequency", "label" => "Sender name for all providers"],
+        ["id" => "email_frequency"],
     );
 
     add_settings_field("day_of_week", "Schedule Day", "aben_callback_field_select", "aben_section_general_setting", "aben_section_general_setting", [
         "id" => "day_of_week",
-        "label" => "Sender name for all providers",
     ]);
 
     add_settings_field("email_time", "Schedule Time", "aben_callback_field_time", "aben_section_general_setting", "aben_section_general_setting", [
         "id" => "email_time",
-        "label" => "Sender name for all providers",
     ]);
 
     // SMTP Tab
@@ -279,7 +274,7 @@ function aben_register_settings()
 
     add_settings_field("smtp_password", "Password", "aben_callback_field_password", "aben_section_smtp_setting", "aben_section_smtp_setting", [
         "id" => "smtp_password",
-        "label" => "Sender name for all providers",
+        "label" => "Your SMTP password",
     ]);
 
     // ToSend Settings
@@ -317,12 +312,10 @@ function aben_register_settings()
 
     add_settings_field("header_subtext", "Header Subtext", "aben_callback_field_text", "aben_section_email_setting", "aben_section_email_setting", [
         "id" => "header_subtext",
-        "label" => "Sender name for all providers",
     ]);
 
     add_settings_field("body_bg", "Body Background Color", "aben_callback_field_color", "aben_section_email_setting", "aben_section_email_setting", [
         "id" => "body_bg",
-        "label" => "Sender name for all providers",
     ]);
 
     add_settings_field(
@@ -331,7 +324,7 @@ function aben_register_settings()
         "aben_callback_field_color",
         "aben_section_email_setting",
         "aben_section_email_setting",
-        ["id" => "header_bg", "label" => "Sender name for all providers"],
+        ["id" => "header_bg"],
     );
 
     add_settings_field(
@@ -359,7 +352,6 @@ function aben_register_settings()
 
     add_settings_field("view_all_posts_text", "Button Text", "aben_callback_field_text", "aben_section_email_setting", "aben_section_email_setting", [
         "id" => "view_all_posts_text",
-        "label" => "Sender name for all providers",
     ]);
 
     add_settings_field("archive_page_slug", "Button Link", "aben_callback_field_text", "aben_section_email_setting", "aben_section_email_setting", [
@@ -369,12 +361,10 @@ function aben_register_settings()
 
     add_settings_field("site_logo", "Footer Logo", "aben_callback_field_media", "aben_section_email_setting", "aben_section_email_setting", [
         "id" => "site_logo",
-        "label" => "Sender name for all providers",
     ]);
 
     add_settings_field("footer_text", "Footer Text", "aben_callback_field_text", "aben_section_email_setting", "aben_section_email_setting", [
         "id" => "footer_text",
-        "label" => "Sender name for all providers",
     ]);
 
     add_settings_field(
@@ -392,7 +382,7 @@ function aben_register_settings()
             "aben_callback_remove_branding",
             "aben_section_email_setting",
             "aben_section_email_setting",
-            ["id" => "remove_branding", "label" => "Sender name for all providers"],
+            ["id" => "remove_branding"],
         );
     }
     add_settings_section("aben_section_email_template", "", "aben_callback_section_email_template", "aben_section_email_template");

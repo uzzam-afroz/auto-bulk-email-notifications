@@ -10,8 +10,8 @@
  * @subpackage Aben/admin/partials/providers
  */
 
-if (!defined('ABSPATH')) {
-    exit;
+if (!defined("ABSPATH")) {
+    exit();
 }
 
 abstract class Aben_Email_Provider
@@ -94,5 +94,31 @@ abstract class Aben_Email_Provider
     protected function get_config($key, $default = null)
     {
         return isset($this->config[$key]) ? $this->config[$key] : $default;
+    }
+
+    /**
+     * Check if provider supports batch sending
+     *
+     * @return bool True if batch sending is supported
+     */
+    public function supports_batch()
+    {
+        return false; // Default: no batch support
+    }
+
+    /**
+     * Send multiple emails in a batch
+     *
+     * @param array $emails Array of email data ['to' => '', 'subject' => '', 'message' => '', 'headers' => []]
+     * @return array Results with success/failure for each email
+     */
+    public function send_batch(array $emails)
+    {
+        // Default implementation: send individually
+        $results = [];
+        foreach ($emails as $email) {
+            $results[] = $this->send($email["to"], $email["subject"], $email["message"], $email["headers"] ?? []);
+        }
+        return $results;
     }
 }

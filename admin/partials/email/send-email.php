@@ -20,25 +20,17 @@ add_action("aben_process_email_batch", "aben_process_email_batch_worker", 10, 2)
  */
 function aben_send_email()
 {
-    error_log("ABEN AUTO: aben_send_email() called");
-
     $posts_result = aben_get_posts_for_email();
     if (empty($posts_result["posts_to_email"])) {
-        error_log("ABEN AUTO: No posts to email");
         return false;
     }
-
-    error_log("ABEN AUTO: Found " . count($posts_result["posts_to_email"]) . " posts to email");
 
     $batch_id = uniqid("aben_", true);
     set_transient("aben_posts_{$batch_id}", $posts_result, HOUR_IN_SECONDS);
 
-    error_log("ABEN AUTO: Batch ID created: {$batch_id}");
-
     // Schedule only the FIRST batch worker (Offset 0)
     as_enqueue_async_action("aben_process_email_batch", [$batch_id, 0], "aben-auto");
 
-    error_log("ABEN AUTO: Scheduled first batch worker with offset 0");
     return true;
 }
 
@@ -50,29 +42,20 @@ function aben_process_email_batch_worker($batch_id, $offset)
 {
     global $wpdb;
 
-    error_log("ABEN AUTO: Batch worker called - Batch ID: {$batch_id}, Offset: {$offset}");
-
     // Get options
     $options = aben_get_options();
     $target_role = $options["user_roles"];
     if (empty($target_role)) {
-        error_log("ABEN AUTO: No target role configured");
         return;
     }
-
-    error_log("ABEN AUTO: Target role: {$target_role}");
 
     // Check if provider supports batch sending
     $logger = new Aben_Email_Logs();
     $provider = Aben_Provider_Factory::create(null, $logger);
     $supports_batch = $provider && $provider->supports_batch();
 
-    $provider_name = $provider ? $provider->get_name() : "None";
-    error_log("ABEN AUTO: Provider: {$provider_name}, Supports batch: " . ($supports_batch ? "Yes" : "No"));
-
     // Use batch size of 100 for ToSend, 50 for others
     $limit = $supports_batch ? 100 : 50;
-    error_log("ABEN AUTO: Batch limit: {$limit}");
 
     /**
      * Optimized SQL:
@@ -96,19 +79,14 @@ function aben_process_email_batch_worker($batch_id, $offset)
 
     $results = $wpdb->get_results($query);
 
-    error_log("ABEN AUTO: Found " . count($results) . " users at offset {$offset}");
-
     if (empty($results)) {
-        error_log("ABEN AUTO: No more users, batch processing complete");
         return;
     } // Done!
 
     // If provider supports batch, send all at once
     if ($supports_batch) {
-        error_log("ABEN AUTO: Using batch send for " . count($results) . " users");
         aben_send_batch_emails($results, $batch_id, $options, $provider);
     } else {
-        error_log("ABEN AUTO: Scheduling " . count($results) . " individual workers");
         // Fallback: Schedule individual workers
         foreach ($results as $user) {
             as_enqueue_async_action("aben_send_single_email_worker", [[$user->user_email, $batch_id, 1]], "aben-auto");
@@ -118,10 +96,7 @@ function aben_process_email_batch_worker($batch_id, $offset)
     // Schedule next batch
     if (count($results) >= $limit) {
         $next_offset = $offset + $limit;
-        error_log("ABEN AUTO: Scheduling next batch with offset {$next_offset}");
         as_enqueue_async_action("aben_process_email_batch", [$batch_id, $next_offset], "aben-auto");
-    } else {
-        error_log("ABEN AUTO: Last batch processed, no more users");
     }
 }
 
@@ -135,16 +110,11 @@ function aben_process_email_batch_worker($batch_id, $offset)
  */
 function aben_send_batch_emails($users, $batch_id, $settings, $provider)
 {
-    error_log("ABEN AUTO BATCH: Processing " . count($users) . " users for batch_id: {$batch_id}");
-
     // Get posts from transient
     $posts_result = get_transient("aben_posts_{$batch_id}");
     if (false === $posts_result || empty($posts_result["posts_to_email"])) {
-        error_log("ABEN AUTO BATCH: Posts not found for batch_id: " . $batch_id);
         return;
     }
-
-    error_log("ABEN AUTO BATCH: Found " . count($posts_result["posts_to_email"]) . " posts from transient");
 
     // Build email objects
     $batch_emails = [];
@@ -215,16 +185,11 @@ function aben_send_batch_emails($users, $batch_id, $settings, $provider)
     }
 
     if (empty($batch_emails)) {
-        error_log("ABEN AUTO BATCH: No valid emails to send (all users filtered out)");
         return;
     }
 
-    error_log("ABEN AUTO BATCH: Prepared " . count($batch_emails) . " emails, calling provider->send_batch()");
-
     // Send batch
     $results = $provider->send_batch($batch_emails);
-
-    error_log("ABEN AUTO BATCH: Batch send completed, processing results");
 
     // Process results
     foreach ($results as $index => $success) {
@@ -235,10 +200,6 @@ function aben_send_batch_emails($users, $batch_id, $settings, $provider)
             do_action("aben_email_send_failed", $batch_emails[$index]["to"], $user_info["user_id"], 1);
         }
     }
-
-    $success_count = array_sum($results);
-    $total_count = count($results);
-    error_log("ABEN AUTO BATCH: Sent {$success_count}/{$total_count} emails successfully");
 }
 
 /**
@@ -259,16 +220,12 @@ function aben_send_single_email_worker($args)
             $attempt = $args["attempt"] ?? 1;
         }
     } else {
-        error_log("ABEN AUTO WORKER: Invalid args format");
         return;
     }
 
     if (empty($email_address) || empty($batch_id)) {
-        error_log("ABEN AUTO WORKER: Missing email or batch_id");
         return;
     }
-
-    error_log("ABEN AUTO WORKER: Processing email to {$email_address}, batch: {$batch_id}, attempt: {$attempt}");
 
     $email_address = sanitize_email($email_address);
     $batch_id = sanitize_text_field($batch_id);
@@ -277,14 +234,12 @@ function aben_send_single_email_worker($args)
     // Get user
     $user = get_user_by("email", $email_address);
     if (!$user) {
-        error_log("ABEN AUTO WORKER: User not found for email {$email_address}");
         return;
     }
 
     // Check subscription
     $is_subscribed = get_user_meta($user->ID, "aben_notification", true);
     if ("1" !== (string) $is_subscribed) {
-        error_log("ABEN AUTO WORKER: User {$email_address} is not subscribed");
         return;
     }
 
@@ -292,7 +247,6 @@ function aben_send_single_email_worker($args)
     $posts_result = get_transient("aben_posts_{$batch_id}");
 
     if (false === $posts_result || empty($posts_result["posts_to_email"])) {
-        error_log("ABEN AUTO WORKER: Posts not found for batch_id: {$batch_id}");
         return;
     }
 
@@ -343,17 +297,12 @@ function aben_send_single_email_worker($args)
     $sent = aben_send_smtp_email($email_address, $settings["email_subject"], $personalized_body);
 
     if ($sent) {
-        error_log("ABEN AUTO WORKER: Email sent successfully to {$email_address}");
         do_action("aben_after_email_sent_action", $tracking_id, $user->ID);
     } else {
-        error_log("ABEN AUTO WORKER: Email failed to {$email_address}, attempt {$attempt}");
         do_action("aben_email_send_failed", $email_address, $user->ID, $attempt);
 
         if ($attempt < 3) {
-            error_log("ABEN AUTO WORKER: Scheduling retry for {$email_address}, attempt " . ($attempt + 1));
             as_schedule_single_action(time() + 300, "aben_send_single_email_worker", [[$email_address, $batch_id, $attempt + 1]], "aben-auto");
-        } else {
-            error_log("ABEN AUTO WORKER: Max attempts reached for {$email_address}");
         }
     }
 }

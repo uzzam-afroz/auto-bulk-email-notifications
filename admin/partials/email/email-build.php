@@ -61,12 +61,8 @@ function aben_get_users_email()
 
 function aben_get_today_posts()
 {
-    error_log("ABEN: aben_get_today_posts() called");
-
     $get_settings = aben_get_options();
     $post_type = $get_settings["post_type"];
-
-    error_log("ABEN: Post type: {$post_type}");
 
     $today = getdate(); // Get Today's Date
 
@@ -89,8 +85,6 @@ function aben_get_today_posts()
     $posts = get_posts($args);
 
     $posts_published_today = count($posts);
-
-    error_log("ABEN: Found {$posts_published_today} posts published today ({$year}-{$month}-{$day})");
 
     $posts_to_email = [];
 
@@ -125,24 +119,18 @@ function aben_get_today_posts()
                 "category" => $taxonomies,
             ];
         }
-        error_log("ABEN: Returning " . count($posts_to_email) . " posts to email");
 
         return [
             "posts_to_email" => $posts_to_email,
             "posts_published" => $posts_published_today,
         ];
-    } else {
-        error_log("ABEN: No posts published today");
     }
 }
 
 function aben_get_weekly_posts($selected_day_num)
 {
-    error_log("ABEN: aben_get_weekly_posts() called with day: {$selected_day_num}");
-
     // Ensure the selected day number is between 0 and 6
     if ($selected_day_num < 0 || $selected_day_num > 6) {
-        error_log("ABEN: Invalid day number: {$selected_day_num}");
         return "Invalid day number. Please provide a number between 0 (Sunday) and 6 (Saturday).";
     }
 

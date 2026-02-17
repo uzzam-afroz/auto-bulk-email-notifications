@@ -60,7 +60,6 @@ class Aben_SMTP_Provider extends Aben_Email_Provider
         }
 
         if (!$this->is_configured()) {
-            error_log('ABEN SMTP: Not configured');
             return null;
         }
 
@@ -94,7 +93,6 @@ class Aben_SMTP_Provider extends Aben_Email_Provider
 
             return $this->mailer;
         } catch (Exception $e) {
-            error_log('ABEN SMTP: Failed to configure: ' . $e->getMessage());
             return null;
         }
     }
@@ -165,7 +163,6 @@ class Aben_SMTP_Provider extends Aben_Email_Provider
             $mailer->smtpClose();
             return true;
         } catch (Exception $e) {
-            error_log('ABEN SMTP: Test connection failed: ' . $e->getMessage());
             return false;
         }
     }
@@ -181,7 +178,6 @@ class Aben_SMTP_Provider extends Aben_Email_Provider
             try {
                 $this->mailer->smtpClose();
             } catch (Exception $e) {
-                error_log('ABEN SMTP: Error closing connection: ' . $e->getMessage());
             }
         }
     }

@@ -4,11 +4,11 @@
  * Action Scheduler Hook Registrations
  *
  * @package Aben
- * @since 2.2.0
+ * @since 2.3.0
  */
 
-if (!defined('ABSPATH')) {
-    exit;
+if (!defined("ABSPATH")) {
+    exit();
 }
 
 /**
@@ -18,11 +18,11 @@ if (!defined('ABSPATH')) {
 function aben_register_scheduler_actions()
 {
     // Main email campaign action
-    add_action('aben_send_email_action', 'aben_send_email');
+    add_action("aben_send_email_action", "aben_send_email");
 
     // Individual email worker
-    add_action('aben_send_single_email_worker', 'aben_send_single_email_worker');
+    add_action("aben_send_single_email_worker", "aben_send_single_email_worker");
 }
 
 // Hook registration must happen before Action Scheduler processes queue
-add_action('plugins_loaded', 'aben_register_scheduler_actions', 5);
+add_action("plugins_loaded", "aben_register_scheduler_actions", 5);

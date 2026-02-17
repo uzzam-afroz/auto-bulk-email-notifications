@@ -61,7 +61,6 @@ class Aben_ToSend_Provider extends Aben_Email_Provider
         }
 
         if (!$this->is_configured()) {
-            error_log("ABEN ToSend: Not configured");
             return null;
         }
 
@@ -70,7 +69,6 @@ class Aben_ToSend_Provider extends Aben_Email_Provider
             $this->api = new Api($api_key);
             return $this->api;
         } catch (ToSendException $e) {
-            error_log("ABEN ToSend: Failed to initialize: " . $e->getMessage());
             return null;
         }
     }
@@ -162,7 +160,6 @@ class Aben_ToSend_Provider extends Aben_Email_Provider
             }
 
             $this->logger->log_email($to, $subject, $message, "failed", $error_msg);
-            error_log("ABEN ToSend: Send failed: " . $error_msg);
             return false;
         }
     }
@@ -178,7 +175,6 @@ class Aben_ToSend_Provider extends Aben_Email_Provider
         $api = $this->get_api();
 
         if (!$api instanceof Api) {
-            error_log("ABEN ToSend Batch: API not initialized");
             // Log all as failed
             foreach ($emails as $email) {
                 $this->logger->log_email($email["to"], $email["subject"], $email["message"], "failed", "ToSend API not initialized");
@@ -214,7 +210,6 @@ class Aben_ToSend_Provider extends Aben_Email_Provider
                 }
             } else {
                 // Unexpected response format - assume all succeeded if no error was thrown
-                error_log("ABEN ToSend Batch: Unexpected response format: " . json_encode($response));
                 foreach ($emails as $email) {
                     $this->logger->log_email($email["to"], $email["subject"], $email["message"], "sent", "Batch send (response unclear)");
                     $results[] = true;
@@ -230,7 +225,6 @@ class Aben_ToSend_Provider extends Aben_Email_Provider
                 $error_msg .= " | Errors: " . json_encode($errors);
             }
 
-            error_log("ABEN ToSend Batch: Send failed: " . $error_msg);
 
             // Log all as failed
             foreach ($emails as $email) {
@@ -258,7 +252,6 @@ class Aben_ToSend_Provider extends Aben_Email_Provider
             $info = $api->getAccountInfo();
             return isset($info["account"]);
         } catch (ToSendException $e) {
-            error_log("ABEN ToSend: Test connection failed: " . $e->getMessage());
             return false;
         }
     }

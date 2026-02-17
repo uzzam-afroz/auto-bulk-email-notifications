@@ -63,6 +63,11 @@ The plugin doesn’t impose any limits, but your hosting provider may have restr
 
 == Changelog ==
 
+= 2.3 =
+* Integrates [toSend](https://tosend.com) email delivery service.
+* Fixes aben notification user meta not adding when new user registers.
+* Fixed a fatal error triggered when SMTP configuration was missing or invalid.
+
 = 2.2 =
 * Migrated to Action Scheduler from WP-Cron.
 

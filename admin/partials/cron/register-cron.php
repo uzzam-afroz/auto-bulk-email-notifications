@@ -19,7 +19,6 @@ function aben_register_cron()
         return;
     }
 
-    // error_log('aben_register_cron called');
 
     $cron_settings = aben_get_cron_settings();
     $interval      = (int) $cron_settings['interval'];
@@ -53,7 +52,6 @@ function aben_register_cron()
                 [],
                 'aben-auto'
             );
-            // error_log('Daily aben_send_email_action scheduled at ' . date('Y-m-d H:i:s', $today_timestamp));
         }
     } elseif ($cron_settings['sending_frequency'] === 'weekly') {
         if (! as_next_scheduled_action('aben_send_email_action', [], 'aben-auto')) {
@@ -81,7 +79,6 @@ function aben_register_cron()
                 [],
                 'aben-auto'
             );
-            // error_log('Weekly aben_send_email_action scheduled at ' . date('Y-m-d H:i:s', $timestamp_weekly));
         }
     }
 }

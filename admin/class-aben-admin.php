@@ -4,7 +4,7 @@
  * The admin-specific functionality of the plugin.
  *
  * @link       https://rehan.work
- * @since      2.2.0
+ * @since      2.3.0
  *
  * @package    Aben
  * @subpackage Aben/admin
@@ -23,11 +23,10 @@
 
 class Aben_Admin
 {
-
     /**
      * The ID of this plugin.
      *
-     * @since    2.2.0
+     * @since    2.3.0
      * @access   private
      * @var      string    $plugin_name    The ID of this plugin.
      */
@@ -36,7 +35,7 @@ class Aben_Admin
     /**
      * The version of this plugin.
      *
-     * @since    2.2.0
+     * @since    2.3.0
      * @access   private
      * @var      string    $version    The current version of this plugin.
      */
@@ -45,13 +44,12 @@ class Aben_Admin
     /**
      * Initialize the class and set its properties.
      *
-     * @since    2.2.0
+     * @since    2.3.0
      * @param      string    $plugin_name       The name of this plugin.
      * @param      string    $version    The version of this plugin.
      */
     public function __construct($plugin_name, $version)
     {
-
         $this->plugin_name = $plugin_name;
         $this->version = $version;
     }
@@ -59,11 +57,10 @@ class Aben_Admin
     /**
      * Register the stylesheets for the admin area.
      *
-     * @since    2.2.0
+     * @since    2.3.0
      */
     public function enqueue_styles()
     {
-
         /**
          * This function is provided for demonstration purposes only.
          *
@@ -76,17 +73,16 @@ class Aben_Admin
          * class.
          */
 
-        wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/aben-admin.css', array(), $this->version, 'all');
+        wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . "css/aben-admin.css", [], $this->version, "all");
     }
 
     /**
      * Register the JavaScript for the admin area.
      *
-     * @since    2.2.0
+     * @since    2.3.0
      */
     public function enqueue_scripts()
     {
-
         /**
          * This function is provided for demonstration purposes only.
          *
@@ -100,16 +96,16 @@ class Aben_Admin
          */
 
         wp_enqueue_media();
-        wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/aben-admin.js', array('jquery'), $this->version, true);
+        wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . "js/aben-admin.js", ["jquery"], $this->version, true);
 
         $current_user = ucfirst(wp_get_current_user()->display_name);
-        wp_localize_script($this->plugin_name, 'currentUserData', array(
-            'user_name' => $current_user,
-        ));
+        wp_localize_script($this->plugin_name, "currentUserData", [
+            "user_name" => $current_user,
+        ]);
     }
 
     public static function is_license_active()
     {
-        return get_option('aben_license_status');
+        return get_option("aben_license_status");
     }
 }

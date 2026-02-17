@@ -30,7 +30,6 @@ class Aben_Provider_Factory
         }
 
         if (!is_array($settings)) {
-            error_log('ABEN Provider Factory: Invalid settings provided');
             return null;
         }
 

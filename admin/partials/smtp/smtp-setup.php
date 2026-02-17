@@ -125,7 +125,6 @@ function aben_get_configured_smtp_mailer()
 
         return $mailer;
     } catch (Exception $e) {
-        error_log("ABEN: Failed to configure SMTP mailer: " . $e->getMessage());
         return null;
     }
 }

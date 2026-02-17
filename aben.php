@@ -4,7 +4,7 @@
  * Plugin Name:       Aben - Auto Bulk Email Notifications
  * Plugin URI:        https://abenplugin.com
  * Description:       The simplest way to engage your subscribers or customers by scheduling and sending emails for your latest blogs, products, news etc. Just automate and send bulk emails directly from your website.
- * Version:           2.2.0
+ * Version:           2.3.0
  * Author:            Rehan Khan
  * Author URI:        https://rehan.work/
  * License:           GPL-2.0+
@@ -18,7 +18,7 @@ if (!defined("WPINC")) {
     die();
 }
 
-define("ABEN_VERSION", "2.2.0");
+define("ABEN_VERSION", "2.3.0");
 define("ABEN_PLUGIN_URL", plugin_dir_url(__FILE__));
 define("ABEN_PLUGIN_PATH", plugin_dir_path(__FILE__));
 define("ABEN_BRAND_TEXT", "Powered by");
@@ -35,6 +35,9 @@ if (!class_exists("ActionScheduler")) {
         require_once ABEN_PLUGIN_PATH . "libs/action-scheduler/action-scheduler.php";
     }
 }
+
+// Load user meta hooks globally
+require_once plugin_dir_path(__FILE__) . "includes/user-meta-hooks.php";
 
 // ========== CRITICAL: Load core files ALWAYS (not just in admin) ==========
 

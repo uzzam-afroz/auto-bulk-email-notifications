@@ -135,7 +135,6 @@ function aben_encrypt_password($password)
     $encryption_key = aben_get_options()["aben_key"];
 
     if (!$encryption_key) {
-        // error_log('Encryption key not found. Please set ABEN_ENCRYPTION_KEY constant in wp-config file.');
     } else {
         $iv_length = openssl_cipher_iv_length("aes-256-cbc");
         $iv = openssl_random_pseudo_bytes($iv_length);
@@ -153,7 +152,6 @@ function aben_decrypt_password($encrypted_password)
     $encryption_key = aben_get_options()["aben_key"];
 
     if (!$encryption_key) {
-        // error_log('Encryption key not found. Please set ABEN_ENCRYPTION_KEY constant in wp-config file.');
     } else {
         $iv_length = openssl_cipher_iv_length("aes-256-cbc");
         $decoded = base64_decode($encrypted_password);

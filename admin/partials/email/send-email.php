@@ -52,7 +52,7 @@ function aben_process_email_batch_worker($batch_id, $offset)
     $supports_batch = $provider && $provider->supports_batch();
 
     // Use batch size of 100 for ToSend, 50 for others
-    $limit = $supports_batch ? 1 : 50;
+    $limit = $supports_batch ? 100 : 50;
 
     /**
      * Optimized SQL:

@@ -75,10 +75,14 @@ add_action("plugins_loaded", "aben_register_action_scheduler_hooks", 5);
 function aben_register_action_scheduler_hooks()
 {
     // Main scheduled email campaign
-    add_action("aben_send_email_action", "aben_send_email");
+    if (!has_action("aben_send_email_action", "aben_send_email")) {
+        add_action("aben_send_email_action", "aben_send_email");
+    }
 
     // Individual email worker
-    add_action("aben_send_single_email_worker", "aben_send_single_email_worker");
+    if (!has_action("aben_send_single_email_worker", "aben_send_single_email_worker")) {
+        add_action("aben_send_single_email_worker", "aben_send_single_email_worker");
+    }
 
     // Initialize Events class to register its Action Scheduler hooks
     // This ensures aben_process_event_email_batch callback is available

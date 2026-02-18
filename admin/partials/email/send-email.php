@@ -12,9 +12,6 @@ if (defined("WP_DEBUG") && WP_DEBUG) {
 
 require_once __DIR__ . "/email-build.php";
 
-// Hook the new batch processor
-add_action("aben_process_email_batch", "aben_process_email_batch_worker", 10, 2);
-
 /**
  * Main function: Starts the first batch with Offset 0
  */
@@ -55,7 +52,7 @@ function aben_process_email_batch_worker($batch_id, $offset)
     $supports_batch = $provider && $provider->supports_batch();
 
     // Use batch size of 100 for ToSend, 50 for others
-    $limit = $supports_batch ? 100 : 50;
+    $limit = $supports_batch ? 1 : 50;
 
     /**
      * Optimized SQL:
@@ -63,7 +60,7 @@ function aben_process_email_batch_worker($batch_id, $offset)
      * - Filters by User Role (stored in the capabilities meta key)
      */
     $query = $wpdb->prepare(
-        "SELECT u.user_email, u.ID
+        "SELECT DISTINCT u.ID, u.user_email
          FROM {$wpdb->users} u
          INNER JOIN {$wpdb->usermeta} m_opt ON u.ID = m_opt.user_id
             AND m_opt.meta_key = 'aben_notification'
@@ -71,6 +68,7 @@ function aben_process_email_batch_worker($batch_id, $offset)
          INNER JOIN {$wpdb->usermeta} m_role ON u.ID = m_role.user_id
             AND m_role.meta_key = '{$wpdb->prefix}capabilities'
          WHERE m_role.meta_value REGEXP %s
+         ORDER BY u.ID ASC
          LIMIT %d OFFSET %d",
         '"' . $target_role . '"',
         $limit,
@@ -83,12 +81,24 @@ function aben_process_email_batch_worker($batch_id, $offset)
         return;
     } // Done!
 
+    // Deduplicate recipients in this run to prevent double processing.
+    $unique_results = [];
+    $seen_recipients = [];
+    foreach ($results as $row) {
+        $recipient_key = strtolower(trim((string) $row->user_email));
+        if (isset($seen_recipients[$recipient_key])) {
+            continue;
+        }
+        $seen_recipients[$recipient_key] = true;
+        $unique_results[] = $row;
+    }
+
     // If provider supports batch, send all at once
     if ($supports_batch) {
-        aben_send_batch_emails($results, $batch_id, $options, $provider);
+        aben_send_batch_emails($unique_results, $batch_id, $options, $provider);
     } else {
         // Fallback: Schedule individual workers
-        foreach ($results as $user) {
+        foreach ($unique_results as $user) {
             as_enqueue_async_action("aben_send_single_email_worker", [[$user->user_email, $batch_id, 1]], "aben-auto");
         }
     }
@@ -119,9 +129,21 @@ function aben_send_batch_emails($users, $batch_id, $settings, $provider)
     // Build email objects
     $batch_emails = [];
     $user_map = []; // Track which user each email belongs to
+    $seen_recipients = [];
 
     foreach ($users as $user_data) {
-        $user = get_user_by("email", $user_data->user_email);
+        $recipient_email = sanitize_email($user_data->user_email);
+        if (empty($recipient_email)) {
+            continue;
+        }
+
+        $recipient_key = strtolower($recipient_email);
+        if (isset($seen_recipients[$recipient_key])) {
+            continue;
+        }
+        $seen_recipients[$recipient_key] = true;
+
+        $user = get_user_by("email", $recipient_email);
         if (!$user) {
             continue;
         }
@@ -172,7 +194,7 @@ function aben_send_batch_emails($users, $batch_id, $settings, $provider)
 
         // Add to batch
         $batch_emails[] = [
-            "to" => $user->user_email,
+            "to" => $recipient_email,
             "subject" => $settings["email_subject"],
             "message" => $personalized_body,
             "headers" => [],

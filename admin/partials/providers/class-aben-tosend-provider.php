@@ -123,6 +123,112 @@ class Aben_ToSend_Provider extends Aben_Email_Provider
     }
 
     /**
+     * Log outbound API payload for debugging when WP_DEBUG is enabled.
+     * Writes to wp-content/aben-tosend-debug.log
+     *
+     * @param string $to Recipient email for log context
+     * @param string $subject Subject for log context
+     * @param array  $payload API payload
+     * @param string $context single|batch
+     * @return void
+     */
+    private function log_api_payload_debug($to, $subject, array $payload, $context = "single")
+    {
+        if (!(defined("WP_DEBUG") && WP_DEBUG)) {
+            return;
+        }
+
+        $prepared = $this->prepare_payload_for_debug($payload);
+        $payload_json = wp_json_encode($prepared, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        if (false === $payload_json) {
+            $payload_json = "Payload JSON encoding failed";
+        }
+
+        $this->write_debug_log_file($to, $subject, $payload_json, $context);
+    }
+
+    /**
+     * Write ToSend payload logs to a dedicated file.
+     *
+     * @param string $to
+     * @param string $subject
+     * @param string $payload_json
+     * @param string $context
+     * @return void
+     */
+    private function write_debug_log_file($to, $subject, $payload_json, $context = "single")
+    {
+        $log_file = trailingslashit(WP_CONTENT_DIR) . "aben-tosend-debug.log";
+        $timestamp = current_time("mysql");
+        $line =
+            "[" .
+            $timestamp .
+            "] [ToSend][" .
+            sanitize_text_field($context) .
+            "] to=" .
+            sanitize_email($to) .
+            " subject=" .
+            sanitize_text_field($subject) .
+            " payload=" .
+            $payload_json .
+            PHP_EOL;
+        error_log($line, 3, $log_file);
+    }
+
+    /**
+     * Prepare payload for debug logs (truncate large content and strip attachment body).
+     *
+     * @param array $payload
+     * @return array
+     */
+    private function prepare_payload_for_debug(array $payload)
+    {
+        $truncate = static function ($value, $limit = 2000) {
+            $value = (string) $value;
+            if (strlen($value) <= $limit) {
+                return $value;
+            }
+            return substr($value, 0, $limit) . "... [truncated]";
+        };
+
+        $sanitize_email_payload = static function (array &$email) use ($truncate) {
+            if (isset($email["html"])) {
+                $email["html_length"] = strlen((string) $email["html"]);
+                $email["html"] = $truncate($email["html"]);
+            }
+
+            if (isset($email["text"])) {
+                $email["text_length"] = strlen((string) $email["text"]);
+                $email["text"] = $truncate($email["text"]);
+            }
+
+            if (!empty($email["attachments"]) && is_array($email["attachments"])) {
+                foreach ($email["attachments"] as &$attachment) {
+                    if (isset($attachment["content"])) {
+                        $attachment["content_length"] = strlen((string) $attachment["content"]);
+                        $attachment["content"] = "[omitted for debug log]";
+                    }
+                }
+                unset($attachment);
+            }
+        };
+
+        if (isset($payload["emails"]) && is_array($payload["emails"])) {
+            foreach ($payload["emails"] as &$email_payload) {
+                if (is_array($email_payload)) {
+                    $sanitize_email_payload($email_payload);
+                }
+            }
+            unset($email_payload);
+        } else {
+            $sanitize_email_payload($payload);
+        }
+
+        return $payload;
+    }
+
+    /**
      * Send email via ToSend API
      *
      * @param string $to Recipient email address
@@ -142,10 +248,12 @@ class Aben_ToSend_Provider extends Aben_Email_Provider
 
         try {
             $params = $this->build_email_params($to, $subject, $message);
+            $this->log_api_payload_debug($to, $subject, $params, "single");
             $response = $api->send($params);
 
             if (isset($response["message_id"])) {
-                $this->logger->log_email($to, $subject, $message, "sent");
+                $message_id = sanitize_text_field((string) $response["message_id"]);
+                $this->logger->log_email($to, $subject, $message, "sent", "message_id: " . $message_id);
                 return true;
             }
 
@@ -189,6 +297,10 @@ class Aben_ToSend_Provider extends Aben_Email_Provider
                 $batch_emails[] = $this->build_email_params($email["to"], $email["subject"], $email["message"]);
             }
 
+            $batch_to = isset($emails[0]["to"]) ? $emails[0]["to"] : "";
+            $batch_subject = "Batch emails (" . count($emails) . ")";
+            $this->log_api_payload_debug($batch_to, $batch_subject, ["emails" => $batch_emails], "batch");
+
             // Send batch
             $response = $api->batch($batch_emails);
 
@@ -200,7 +312,9 @@ class Aben_ToSend_Provider extends Aben_Email_Provider
                     $success = isset($result["message_id"]) || (isset($result["status"]) && $result["status"] === "success");
 
                     if ($success) {
-                        $this->logger->log_email($email["to"], $email["subject"], $email["message"], "sent", "Batch send");
+                        $message_id = isset($result["message_id"]) ? sanitize_text_field((string) $result["message_id"]) : "";
+                        $success_note = !empty($message_id) ? "message_id: " . $message_id : "Batch send";
+                        $this->logger->log_email($email["to"], $email["subject"], $email["message"], "sent", $success_note);
                         $results[] = true;
                     } else {
                         $error_msg = isset($result["error"]) ? json_encode($result["error"]) : "Unknown error";
@@ -224,7 +338,6 @@ class Aben_ToSend_Provider extends Aben_Email_Provider
             if (!empty($errors)) {
                 $error_msg .= " | Errors: " . json_encode($errors);
             }
-
 
             // Log all as failed
             foreach ($emails as $email) {

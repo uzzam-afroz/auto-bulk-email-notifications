@@ -11,8 +11,6 @@ if (! function_exists('aben_as_available')) {
     }
 }
 
-add_action('aben_send_email_action', 'aben_send_email');
-
 function aben_register_cron()
 {
     if (! aben_as_available()) {
